@@ -3,90 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Archivos HTML</title>
+    <title>My Tech Guides | Índice</title>
+    
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
-        #fileList { list-style: none; padding: 0; }
-        #fileList li { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #e9e9e9; }
-        #fileList li a { text-decoration: none; color: #007bff; font-weight: bold; }
-        #fileList li a:hover { color: #0056b3; text-decoration: underline; }
-        .error { color: red; font-weight: bold; }
+        /* CSS Reset Básico para consistencia */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Variables CSS para facilitar cambios futuros */
+        :root {
+            --primary-color: #007bff; /* Azul profesional */
+            --primary-hover: #0056b3;
+            --background-color: #f4f7f6; /* Fondo gris muy claro */
+            --card-background: #ffffff; /* Fondo de tarjeta blanco */
+            --text-color: #333;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo general del cuerpo */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Contenedor principal para centrar y limitar el ancho */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Título de la página */
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        /* Lista de guías (la tabla de contenido) */
+        .guide-list {
+            list-style: none; /* Eliminar viñetas */
+            padding: 0;
+            display: grid;
+            gap: 20px;
+            /* Diseño de cuadrícula adaptable para pantallas grandes */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        /* Estilo de cada elemento de la lista (el contenedor del botón/tarjeta) */
+        .guide-list li {
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Efecto hover sutil para la interacción */
+        .guide-list li:hover {
+            transform: translateY(-5px); /* Pequeño levantamiento */
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* El enlace (que actúa como botón grande) */
+        .guide-link {
+            display: block;
+            width: 100%;
+            padding: 25px 30px;
+            background-color: var(--card-background);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            text-align: left;
+            border: 1px solid #e0e0e0; /* Borde sutil */
+        }
+
+        /* Efecto hover en el enlace */
+        .guide-link:hover {
+            background-color: var(--primary-color);
+            color: var(--card-background); /* Texto blanco sobre fondo azul */
+            border-color: var(--primary-hover);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📁 Archivos HTML en este Directorio</h1>
-        <p>A continuación, se muestra una lista de archivos HTML. (Requiere un servidor web real para funcionar completamente).</p>
-        
-        <ul id="fileList">
-            <li class="error">Cargando lista de archivos...</li>
-        </ul>
-        
-        <p class="error" id="warningMessage"></p>
-    </div>
+        <h1>📚 Guías y Recursos Técnicos</h1>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const fileListElement = document.getElementById('fileList');
-            const warningElement = document.getElementById('warningMessage');
+        <ul class="guide-list">
+            <li>
+                <a href="C%23%20Guide.html" class="guide-link">
+                    C# Guide: Introducción y Fundamentos
+                </a>
+            </li>
 
-            // En un entorno de servidor real, una solicitud a '/' o './' a menudo devuelve
-            // una lista de directorios o una página de índice que puedes parsear.
-            // En un entorno local (file://), esto siempre fallará por motivos de seguridad.
+            <li>
+                <a href="Python%20Basics.html" class="guide-link">
+                    Python Basics: Scripts y Automatización
+                </a>
+            </li>
+
+            <li>
+                <a href="Git%20Cheatsheet.html" class="guide-link">
+                    Git Cheatsheet Esencial
+                </a>
+            </li>
             
-            fetch('./')
-                .then(response => {
-                    if (!response.ok) {
-                        // Si la respuesta no es OK, el servidor puede no estar configurado para listar.
-                        throw new Error("El servidor no permite el listado de directorios (Error " + response.status + ").");
-                    }
-                    return response.text();
-                })
-                .then(htmlText => {
-                    // Limpiar el mensaje de 'Cargando...'
-                    fileListElement.innerHTML = '';
-                    
-                    // Crear un DOM temporal para parsear el HTML de la respuesta del servidor
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlText, 'text/html');
-                    
-                    // La lógica de extracción depende de cómo tu servidor liste los archivos.
-                    // Este es un ejemplo genérico que busca todos los enlaces.
-                    let foundFiles = false;
-
-                    doc.querySelectorAll('a').forEach(anchor => {
-                        const href = anchor.getAttribute('href');
-                        
-                        // Filtra solo los archivos que terminan en .html o .htm (e ignora el directorio actual './')
-                        if (href && (href.toLowerCase().endsWith('.html') || href.toLowerCase().endsWith('.htm')) && href !== './') {
-                            const fileName = anchor.textContent || href;
-                            
-                            const listItem = document.createElement('li');
-                            const link = document.createElement('a');
-                            link.href = href;
-                            link.textContent = fileName.trim();
-                            listItem.appendChild(link);
-                            fileListElement.appendChild(listItem);
-                            foundFiles = true;
-                        }
-                    });
-
-                    if (!foundFiles) {
-                         fileListElement.innerHTML = '<li class="error">No se encontraron archivos HTML en el listado devuelto por el servidor, o la estructura no es compatible.</li>';
-                    }
-
-                    warningElement.textContent = "Nota: El listado de archivos fue exitoso.";
-
-                })
-                .catch(error => {
-                    // Manejo de errores de red o CORS/seguridad
-                    fileListElement.innerHTML = '<li class="error">Error de carga.</li>';
-                    warningElement.textContent = '❌ Falló la carga. Razón más probable: Las restricciones de seguridad del navegador (CORS/origen) impiden que JavaScript liste archivos de un directorio. Debes ejecutar esto en un SERVIDOR WEB con listado de directorios habilitado.';
-                    console.error("Error al intentar listar el directorio:", error);
-                });
-        });
-    </script>
+            </ul>
+    </div>
 </body>
 </html>
