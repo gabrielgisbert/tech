@@ -75,7 +75,7 @@
     </style>
 </head>
 <body>
-    <h1>Guía de Estudio c# y .NET — LEVEL 20–32</h1>
+    <h1>Guía de Estudio c# y .NET — LEVEL 20–37</h1>
     <div id="chapters">
 
     <div class="chapter">
@@ -1392,7 +1392,478 @@ dictionary[<span class="str">"carrier"</span>] = <span class="str">"a ship that 
             <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
         </div>
     </div>
+     <div class="chapter">
+        <div class="chapter-header" onclick="toggleChapter(this)">LEVEL 33: MANAGING LARGER PROGRAMS</div>
+        <div class="chapter-content">
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+            
+            <h3>Speedrun</h3>
+            <ul>
+                <li>C# programs can be spread across multiple files. It is common to put each type in its own file.</li>
+                <li>Namespaces are a way to organize type definitions into named groups. Types intended for reuse should be placed in a namespace.</li>
+                <li>A <code>using</code> directive allows you to use the simple name for a type instead of its fully qualified name.</li>
+                <li>Several namespaces, including <code>System</code>, are automatically included in .NET 6+ projects and need no <code>using</code> directive. You can add to this list with a global <code>using</code> directive.</li>
+                <li>A <code>using static</code> directive allows you to use static members of a type without the type name.</li>
+                <li>Add types to a namespace with either <code><span class="kw">namespace</span> Name { ... }</code> or by putting <code><span class="kw">namespace</span> Name;</code> at the start of a file.</li>
+                <li>Traditional entry points (before .NET 5) declare a <code><span class="kw">public static void</span> <span class="meth">Main</span>(<span class="kw">string</span>[] args)</code> method in a <code>Program</code> class.</li>
+            </ul>
+
+            <h3>Using Multiple Files</h3>
+            <p>As your programs grow, having everything in a single file becomes unwieldy. Most C# programmers prefer putting types into separate files with a name that matches the type name.</p>
+            <pre><code class="language-csharp"><span class="kw">public class</span> <span class="type">One</span> { }</code></pre>
+            <p>You can use shortcuts like <b>Alt + Enter</b> to access Quick Actions to move a type to its own file (e.g., <code>One.cs</code>). Many C# programmers put each type in separate files; you're in good company if you do the same. Note that a program can only contain one file with a main method.</p>
+
+            <h3>Namespaces and Using Directives</h3>
+            <p>Namespaces help organize code and prevent naming collisions.</p>
+            <ul>
+                <li><b>System:</b> Contains foundational types like <code>Console</code>, <code>Convert</code>, built-in types, <code>Math</code>, <code>Random</code>, <code>DateTime</code>, etc.</li>
+                <li><b>System.Collections.Generic:</b> Contains generic collections like <code>List&lt;T&gt;</code>, <code>IEnumerable&lt;T&gt;</code>, and <code>Dictionary&lt;TKey, TValue&gt;</code>.</li>
+            </ul>
+            <p>A <code>using</code> directive tells the compiler to look in a specific namespace for types:</p>
+            <pre><code class="language-csharp"><span class="kw">using</span> <span class="type">System.Text</span>;</code></pre>
+            <p>With that directive, you no longer need the fully qualified name. Starting with C# 10, several directives are implicitly added (like <code>System</code>, <code>System.Collections.Generic</code>, <code>System.Linq</code>, etc.).</p>
+
+            <h4>Advanced Using Directive Features</h4>
+            <p><b>Global using directives:</b> Include the <code>global</code> keyword to make a directive apply to all files in the project.</p>
+            <pre><code class="language-csharp"><span class="kw">global using</span> <span class="type">SomeNamespace</span>;</code></pre>
+            <p>It is recommended to put these in a separate file like <code>GlobalUsings.cs</code>.</p>
+
+            <p><b>Static using directives:</b> Allow access to static members without typing the class name.</p>
+            <pre><code class="language-csharp"><span class="kw">using static</span> <span class="type">System.Math</span>;
+<span class="kw">using static</span> <span class="type">System.Console</span>;</code></pre>
+
+            <p><b>Name Conflicts and Aliases:</b> If two types share a name, you can use an alias to resolve the conflict.</p>
+            <pre><code class="language-csharp"><span class="kw">using</span> <span class="type">PhysicsPoint</span> = <span class="type">PhysicsEngine.Point</span>;
+<span class="kw">using</span> <span class="type">UIPoint</span> = <span class="type">UserInterface.Point</span>;
+
+<span class="type">PhysicsPoint</span> p1 = <span class="kw">new</span> <span class="type">PhysicsPoint</span>();
+<span class="type">UIPoint</span> p2 = <span class="kw">new</span> <span class="type">UIPoint</span>();</code></pre>
+
+            <h3>Putting Types into Namespaces</h3>
+            <p>Anything meant to be shared should be in a namespace. Use the <code>namespace</code> keyword.</p>
+            <pre><code class="language-csharp"><span class="kw">namespace</span> <span class="type">SpaceGame</span>
+{
+    <span class="kw">public enum</span> <span class="type">Color</span> { Red, Green, Blue, Yellow }
+    <span class="kw">public class</span> <span class="type">Point</span> { <span class="comm">/* ... */</span> }
+}</code></pre>
+            <p>Namespaces can be nested (e.g., <code>SpaceGame.Drawing</code>). A file-scoped namespace declaration eliminates indentation:</p>
+            <pre><code class="language-csharp"><span class="kw">namespace</span> <span class="type">SpaceGame</span>;
+<span class="kw">public enum</span> <span class="type">Color</span> { Red, Green, Blue, Yellow }
+<span class="kw">public class</span> <span class="type">Point</span> { <span class="comm">/* ... */</span> }</code></pre>
+            <p><b>Conventions:</b> If your project is named <code>SpaceGame</code>, your root namespace should be <code>SpaceGame</code>. Folders usually correspond to nested namespaces (e.g., a folder named <code>Graphics</code> implies <code>SpaceGame.Graphics</code>).</p>
+
+            <h3>Traditional Entry Points</h3>
+            <p>Before top-level statements, the entry point was explicitly defined:</p>
+            <pre><code class="language-csharp"><span class="kw">using</span> <span class="type">System</span>;
+<span class="kw">namespace</span> <span class="type">HelloWorld</span>
+{
+    <span class="kw">internal class</span> <span class="type">Program</span>
+    {
+        <span class="kw">static void</span> <span class="meth">Main</span>(<span class="kw">string</span>[] args)
+        {
+            <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"Hello, World!"</span>);
+        }
+    }
+}</code></pre>
+            
+            <hr>
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+        </div>
+    </div>
+    <div class="chapter">
+        <div class="chapter-header" onclick="toggleChapter(this)">LEVEL 34: METHODS REVISITED</div>
+        <div class="chapter-content">
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+            
+            <h3>Speedrun</h3>
+            <ul>
+                <li>A parameter can be given a default value, making it optional: <code><span class="kw">void</span> <span class="meth">DoStuff</span>(<span class="kw">int</span> x = <span class="lit">4</span>)</code>.</li>
+                <li>You can use named arguments: <code><span class="meth">DoStuff</span>(x: <span class="lit">2</span>)</code>. This allows changing order.</li>
+                <li><code>params</code> allows a variable number of arguments: <code><span class="kw">void</span> <span class="meth">DoStuff</span>(<span class="kw">params string</span>[] words)</code>.</li>
+                <li>Use <code>ref</code> or <code>out</code> to pass by reference. <code>out</code> is for when the method initializes the variable.</li>
+                <li>A <code>Deconstruct</code> method allows unpacking objects into variables: <code>(<span class="kw">float</span> x, <span class="kw">float</span> y) = point;</code>.</li>
+                <li>Extension methods appear as methods of another type: <code><span class="kw">static string</span> <span class="meth">Extension</span>(<span class="kw">this string</span> text)</code>.</li>
+            </ul>
+
+            <h3>Optional and Named Arguments</h3>
+            <p>Define a default value in the method signature. Optional parameters must come last. You cannot use <code>new List&lt;int&gt;()</code> as a default (must be a compile-time constant).</p>
+            <pre><code class="language-csharp"><span class="kw">public int</span> <span class="meth">RollDie</span>(<span class="kw">int</span> sides = <span class="lit">6</span>) => _random.<span class="meth">Next</span>(sides) + <span class="lit">1</span>;</code></pre>
+            <p>Named arguments allow clarity and out-of-order execution:</p>
+            <pre><code class="language-csharp"><span class="type">Math</span>.<span class="meth">Clamp</span>(min: <span class="lit">50</span>, max: <span class="lit">100</span>, value: <span class="lit">20</span>);</code></pre>
+
+            <h3>Variable Number of Parameters</h3>
+            <p>Use the <code>params</code> keyword to accept an array of arguments as a comma-separated list.</p>
+            <pre><code class="language-csharp"><span class="kw">public static double</span> <span class="meth">Average</span>(<span class="kw">params int</span>[] numbers)
+{
+    <span class="kw">double</span> total = <span class="lit">0</span>;
+    <span class="kw">foreach</span> (<span class="kw">int</span> number <span class="kw">in</span> numbers)
+        total += number;
+    <span class="kw">return</span> total / numbers.Length;
+}
+
+<span class="meth">Average</span>(<span class="lit">2</span>, <span class="lit">3</span>);
+<span class="meth">Average</span>(<span class="lit">2</span>, <span class="lit">5</span>, <span class="lit">8</span>);
+<span class="meth">Average</span>(<span class="lit">41</span>, <span class="lit">49</span>, <span class="lit">29</span>, <span class="lit">2</span>, <span class="lit">-7</span>, <span class="lit">18</span>);</code></pre>
+
+            <h3>Passing by Reference</h3>
+            <p>Normally, values are copied (pass by value). Passing by reference shares the memory location. Useful for large structs or modifying variables.</p>
+            
+            <h4>ref Parameter</h4>
+            <p>Must be initialized before calling. Use <code>ref</code> in definition and call.</p>
+            <pre><code class="language-csharp"><span class="kw">void</span> <span class="meth">Swap</span>(<span class="kw">ref int</span> a, <span class="kw">ref int</span> b)
+{
+    <span class="kw">int</span> temporary = a;
+    a = b;
+    b = temporary;
+}
+<span class="kw">int</span> y = <span class="lit">3</span>;
+<span class="meth">DisplayNumber</span>(<span class="kw">ref</span> y);</code></pre>
+
+            <h4>out Parameter</h4>
+            <p>Similar to <code>ref</code>, but does not require initialization before calling. The method <i>must</i> assign a value before returning.</p>
+            <pre><code class="language-csharp"><span class="kw">void</span> <span class="meth">SetupNumber</span>(<span class="kw">bool</span> useBigNumber, <span class="kw">out double</span> value)
+{
+    value = useBigNumber ? <span class="lit">1000000</span> : <span class="lit">1</span>;
+}
+
+<span class="meth">SetupNumber</span>(<span class="kw">true</span>, <span class="kw">out double</span> x);
+<span class="meth">SetupNumber</span>(<span class="kw">false</span>, <span class="kw">out double</span> y);</code></pre>
+
+            <h3>Deconstructors</h3>
+            <p>Enable unpacking objects into variables (like tuples). Define a method named <code>Deconstruct</code> with <code>out</code> parameters.</p>
+            <pre><code class="language-csharp"><span class="kw">var</span> tuple = (<span class="lit">2</span>, <span class="lit">3</span>);
+(<span class="kw">int</span> a, <span class="kw">int</span> b) = tuple;
+
+<span class="kw">public void</span> <span class="meth">Deconstruct</span>(<span class="kw">out float</span> x, <span class="kw">out float</span> y)
+{
+    x = X;
+    y = Y;
+}</code></pre>
+
+            <h3>Extension Methods</h3>
+            <p>Allow adding methods to existing types (even if you don't own the code). Must be a <code>static</code> method in a <code>static</code> class. Use <code>this</code> before the first parameter.</p>
+            <pre><code class="language-csharp"><span class="kw">public static class</span> <span class="type">StringExtensions</span>
+{
+    <span class="kw">public static string</span> <span class="meth">ToAlternating</span>(<span class="kw">this string</span> text)
+    {
+        <span class="kw">string</span> result = <span class="str">""</span>;
+        <span class="kw">bool</span> isCapital = <span class="kw">true</span>;
+        <span class="kw">foreach</span> (<span class="kw">char</span> letter <span class="kw">in</span> text)
+        {
+            result += isCapital ? <span class="kw">char</span>.<span class="meth">ToUpper</span>(letter) : <span class="kw">char</span>.<span class="meth">ToLower</span>(letter);
+            isCapital = !isCapital;
+        }
+        <span class="kw">return</span> result;
+    }
+}
+
+<span class="kw">string</span> message = <span class="str">"Hello, World!"</span>;
+<span class="type">Console</span>.<span class="meth">WriteLine</span>(message.<span class="meth">ToAlternating</span>());</code></pre>
+            
+            <hr>
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+        </div>
+    </div>
+    <div class="chapter">
+        <div class="chapter-header" onclick="toggleChapter(this)">LEVEL 35: ERROR HANDLING AND EXCEPTIONS</div>
+        <div class="chapter-content">
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+            
+            <h3>Speedrun</h3>
+            <ul>
+                <li>Exceptions are the primary error handling mechanism. They are objects of type <code>Exception</code>.</li>
+                <li>Use <code>try</code> blocks for code that might fail, and <code>catch</code> blocks to handle errors.</li>
+                <li>Throw exceptions with <code>throw new Exception();</code>.</li>
+                <li>A <code>finally</code> block runs regardless of the outcome (success or exception).</li>
+            </ul>
+
+            <h3>Handling Exceptions</h3>
+            <p>Exceptions bubble up the call stack. Catching them prevents a crash.</p>
+            <pre><code class="language-csharp"><span class="kw">try</span>
+{
+    number = <span class="type">Convert</span>.<span class="meth">ToInt32</span>(response);
+}
+<span class="kw">catch</span> (<span class="type">FormatException</span>)
+{
+    number = <span class="lit">-1</span>;
+    <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"I do not understand."</span>);
+}
+<span class="kw">catch</span> (<span class="type">OverflowException</span>)
+{
+    number = <span class="lit">-1</span>;
+    <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"Number too big!"</span>);
+}
+<span class="kw">catch</span> (<span class="type">Exception</span> e) <span class="comm">// Catch-all</span>
+{
+    <span class="type">Console</span>.<span class="meth">WriteLine</span>(e.Message);
+}</code></pre>
+
+            <h3>Throwing Exceptions</h3>
+            <p>Use specific exception types when possible (e.g., <code>ArgumentNullException</code>, <code>InvalidOperationException</code>).</p>
+            <pre><code class="language-csharp"><span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"Name an animal."</span>);
+<span class="kw">string</span>? animal = <span class="type">Console</span>.<span class="meth">ReadLine</span>();
+<span class="kw">if</span> (animal == <span class="str">"snake"</span>) <span class="kw">throw new</span> <span class="type">NotSupportedException</span>(<span class="str">"I have ophidiophobia."</span>);</code></pre>
+
+            <h3>The Finally Block</h3>
+            <p>Code in <code>finally</code> runs whether the <code>try</code> block succeeds, fails, or returns early. Useful for cleanup.</p>
+            <pre><code class="language-csharp"><span class="kw">try</span>
+{
+    <span class="comm">// Potentially failing code</span>
+}
+<span class="kw">catch</span> (<span class="type">SnakeException</span>) { <span class="comm">/* Handle error */</span> }
+<span class="kw">finally</span>
+{
+    <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"We're all done here."</span>);
+}</code></pre>
+
+            <h3>Exception Guidelines</h3>
+            <ul>
+                <li><b>Only Handle What You Can Fix:</b> If you can't resolve it, let it bubble up.</li>
+                <li><b>Use the Right Exception Type:</b> Avoid generic <code>Exception</code> if a specific one fits.</li>
+                <li><b>Avoid Pokémon Exception Handling:</b> Don't catch everything (<code>catch (Exception)</code>) unless necessary (e.g., global logging).</li>
+                <li><b>Avoid Eating Exceptions:</b> Empty catch blocks (<code>catch { }</code>) hide bugs.</li>
+                <li><b>Avoid Throwing When Possible:</b> Use logic (<code>if</code>) instead of exceptions for predictable control flow.</li>
+            </ul>
+
+            <h3>Advanced Handling</h3>
+            <p><b>Stack Traces:</b> <code>Console.WriteLine(e)</code> prints the exception and the stack trace (where it happened).</p>
+            <p><b>Rethrowing:</b> Use <code>throw;</code> inside a catch block to preserve the original stack trace. Using <code>throw e;</code> resets the trace.</p>
+            <p><b>Exception Filters:</b> Use <code>when</code> to conditionally catch an exception.</p>
+            <pre><code class="language-csharp"><span class="kw">catch</span> (<span class="type">CodedErrorException</span> e) <span class="kw">when</span> (e.ErrorCode == <span class="type">ErrorCodes</span>.ConnectionFailure) { ... }</code></pre>
+            
+            <hr>
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+        </div>
+    </div>
     
+    <div class="chapter">
+        <div class="chapter-header" onclick="toggleChapter(this)">LEVEL 36: DELEGATES</div>
+        <div class="chapter-content">
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+            
+            <h3>Speedrun</h3>
+            <ul>
+                <li>A delegate is a variable that stores methods, allowing them to be passed like objects.</li>
+                <li>Define: <code><span class="kw">public delegate float</span> <span class="type">NumberDelegate</span>(<span class="kw">float</span> number);</code>.</li>
+                <li>Assign: <code><span class="type">NumberDelegate</span> d = <span class="meth">AddOne</span>;</code>.</li>
+                <li>Invoke: <code>d(<span class="lit">2</span>)</code> or <code>d.<span class="meth">Invoke</span>(<span class="lit">2</span>)</code>.</li>
+                <li><code>Action</code>, <code>Func</code>, and <code>Predicate</code> are pre-defined generic delegates.</li>
+            </ul>
+
+            <h3>Delegate Basics</h3>
+            <p>Delegates allow methods to be passed as parameters to other methods, increasing flexibility.</p>
+            <pre><code class="language-csharp"><span class="kw">using</span> <span class="type">System</span>;
+
+<span class="kw">namespace</span> <span class="type">DelegadosDemo</span>
+{
+    <span class="comm">// 1. DEFINICIÓN DEL DELEGADO (El Contrato)</span>
+    <span class="comm">// Define que cualquier método que queramos usar debe recibir un int y devolver un int.</span>
+    <span class="kw">public delegate int</span> <span class="type">NumberDelegate</span>(<span class="kw">int</span> number);
+
+    <span class="kw">class</span> <span class="type">Program</span>
+    {
+        <span class="kw">static void</span> <span class="meth">Main</span>(<span class="kw">string</span>[] args)
+        {
+            <span class="comm">// Datos de prueba</span>
+            <span class="kw">int</span>[] numerosOriginales = { <span class="lit">1</span>, <span class="lit">2</span>, <span class="lit">3</span>, <span class="lit">4</span>, <span class="lit">5</span> };
+
+            <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"--- PRUEBA 1: Usando AddOne ---"</span>);
+            <span class="comm">// Pasamos el método 'AddOne' como parámetro. No ponemos paréntesis () porque no lo ejecutamos aquí.</span>
+            <span class="kw">int</span>[] resultadoSuma = <span class="meth">ChangeArrayElements</span>(numerosOriginales, <span class="meth">AddOne</span>);
+            <span class="meth">ImprimirArray</span>(resultadoSuma);
+
+
+            <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"\n--- PRUEBA 2: Usando ElevarAlCuadrado ---"</span>);
+            <span class="comm">// Reutilizamos LA MISMA función 'ChangeArrayElements', pero cambiamos la lógica inyectada.</span>
+            <span class="kw">int</span>[] resultadoCuadrado = <span class="meth">ChangeArrayElements</span>(numerosOriginales, <span class="meth">ElevarAlCuadrado</span>);
+            <span class="meth">ImprimirArray</span>(resultadoCuadrado);
+        }
+
+        <span class="comm">// 2. EL MÉTODO PROCESADOR (El que recibe el delegado)</span>
+        <span class="comm">// Este método sabe recorrer un array, pero NO sabe qué hacer con los números.</span>
+        <span class="comm">// Delega esa responsabilidad al parámetro 'operation'.</span>
+        <span class="kw">static int</span>[] <span class="meth">ChangeArrayElements</span>(<span class="kw">int</span>[] numbers, <span class="type">NumberDelegate</span> operation)
+        {
+            <span class="kw">int</span>[] result = <span class="kw">new</span> <span class="kw">int</span>[numbers.Length];
+            
+            <span class="kw">for</span> (<span class="kw">int</span> index = <span class="lit">0</span>; index < result.Length; index++)
+            {
+                <span class="comm">// Aquí ocurre la magia: Ejecutamos la función que nos hayan pasado</span>
+                result[index] = operation(numbers[index]); 
+            }
+            
+            <span class="kw">return</span> result;
+        }
+
+        <span class="comm">// 3. LAS IMPLEMENTACIONES (Las funciones que cumplen el contrato)</span>
+        
+        <span class="comm">// Opción A: Sumar 1 (Cumple con recibir int y devolver int)</span>
+        <span class="kw">static int</span> <span class="meth">AddOne</span>(<span class="kw">int</span> number)
+        {
+            <span class="kw">return</span> number + <span class="lit">1</span>;
+        }
+
+        <span class="comm">// Opción B: Elevar al cuadrado (También cumple el contrato)</span>
+        <span class="kw">static int</span> <span class="meth">ElevarAlCuadrado</span>(<span class="kw">int</span> number)
+        {
+            <span class="kw">return</span> number * number;
+        }
+
+        <span class="comm">// Método auxiliar solo para mostrar los resultados en consola</span>
+        <span class="kw">static void</span> <span class="meth">ImprimirArray</span>(<span class="kw">int</span>[] array)
+        {
+            <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="kw">string</span>.<span class="meth">Join</span>(<span class="str">", "</span>, array));
+        }
+    }
+}</code></pre>
+
+            <h3>Action, Func, and Predicate</h3>
+            <p>You rarely need to define custom delegates thanks to these generic types:</p>
+            <ul>
+                <li><b>Action:</b> Returns <code>void</code>. Can have parameters. E.g., <code>Action&lt;string&gt;</code> matches <code>void Method(string s)</code>.</li>
+                <li><b>Func:</b> Returns a value. Last generic parameter is the return type. E.g., <code>Func&lt;int, double&gt;</code> matches <code>double Method(int i)</code>.</li>
+                <li><b>Predicate:</b> Returns <code>bool</code>. E.g., <code>Predicate&lt;T&gt;</code> is equivalent to <code>Func&lt;T, bool&gt;</code>.</li>
+            </ul>
+            
+            <pre><code class="language-csharp"><span class="kw">using</span> <span class="type">System</span>;
+<span class="kw">using</span> <span class="type">System.Collections.Generic</span>;
+
+<span class="kw">public class</span> <span class="type">Program</span>
+{
+    <span class="kw">public static void</span> <span class="meth">Main</span>()
+    {
+        <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"--- 1. ACTION (Void) ---"</span>);
+        <span class="comm">// ACTION: Siempre devuelve void.</span>
+        <span class="comm">// Sintaxis: Action&lt;TipoParametro1, TipoParametro2, ...&gt;</span>
+        
+        <span class="comm">// Ejemplo: Recibe un string, imprime en consola. No devuelve nada.</span>
+        <span class="type">Action</span>&lt;<span class="kw">string</span>&gt; logger = (mensaje) => 
+        {
+            <span class="type">Console</span>.<span class="meth">WriteLine</span>($<span class="str">"[LOG]: {mensaje}"</span>);
+        };
+
+        <span class="comm">// Uso</span>
+        logger(<span class="str">"Iniciando sistema..."</span>);
+        logger(<span class="str">"Carga completada."</span>);
+
+
+        <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"\n--- 2. FUNC (Retorna Valor) ---"</span>);
+        <span class="comm">// FUNC: Siempre devuelve un valor.</span>
+        <span class="comm">// Sintaxis: Func&lt;Input1, Input2, ..., TIPO_RETORNO&gt;</span>
+        <span class="comm">// IMPORTANTE: El último parámetro genérico es SIEMPRE el tipo que devuelve.</span>
+
+        <span class="comm">// Ejemplo: Recibe dos enteros (int, int) y devuelve un entero (int)</span>
+        <span class="type">Func</span>&lt;<span class="kw">int</span>, <span class="kw">int</span>, <span class="kw">int</span>&gt; multiplicar = (x, y) => 
+        {
+            <span class="kw">return</span> x * y;
+        };
+
+        <span class="comm">// Uso</span>
+        <span class="kw">int</span> resultado = multiplicar(<span class="lit">5</span>, <span class="lit">4</span>);
+        <span class="type">Console</span>.<span class="meth">WriteLine</span>($<span class="str">"El resultado de 5 * 4 es: {resultado}"</span>);
+
+
+        <span class="type">Console</span>.<span class="meth">WriteLine</span>(<span class="str">"\n--- 3. PREDICATE (Retorna Bool) ---"</span>);
+        <span class="comm">// PREDICATE: Siempre recibe un dato y devuelve true/false.</span>
+        <span class="comm">// Sintaxis: Predicate&lt;TipoEntrada&gt;</span>
+        <span class="comm">// Es equivalente a escribir: Func&lt;TipoEntrada, bool&gt;</span>
+
+        <span class="comm">// Ejemplo: Recibe un número y verifica si es par.</span>
+        <span class="type">Predicate</span>&lt;<span class="kw">int</span>&gt; esPar = (numero) => 
+        {
+            <span class="kw">return</span> numero % <span class="lit">2</span> == <span class="lit">0</span>;
+        };
+
+        <span class="comm">// Uso</span>
+        <span class="kw">int</span> numeroPrueba = <span class="lit">10</span>;
+        <span class="kw">bool</span> check = esPar(numeroPrueba);
+        <span class="type">Console</span>.<span class="meth">WriteLine</span>($<span class="str">"¿El número {numeroPrueba} es par? {check}"</span>);
+        
+        
+        <span class="comm">// Ejemplo práctico: Usando Predicate en una lista real</span>
+        <span class="type">List</span>&lt;<span class="kw">int</span>&gt; listaNumeros = <span class="kw">new</span> <span class="type">List</span>&lt;<span class="kw">int</span>&gt; { <span class="lit">1</span>, <span class="lit">3</span>, <span class="lit">5</span>, <span class="lit">8</span>, <span class="lit">10</span> };
+        <span class="comm">// Find usa un Predicate internamente</span>
+        <span class="kw">int</span> primerPar = listaNumeros.<span class="meth">Find</span>(esPar); 
+        <span class="type">Console</span>.<span class="meth">WriteLine</span>($<span class="str">"Primer par encontrado en la lista: {primerPar}"</span>);
+    }
+}</code></pre>
+
+            <h3>Multicast Delegates</h3>
+            <p>Delegates can hold multiple methods (a chain). Use <code>+=</code> to add and <code>-=</code> to remove methods. Invoking the delegate calls all methods in the chain.</p>
+            <pre><code class="language-csharp"><span class="type">Log</span> logMethods = <span class="meth">LogToConsole</span>;
+logMethods += <span class="meth">LogToDatabase</span>;
+logMethods += <span class="meth">LogToTextFile</span>;</code></pre>
+            
+            <hr>
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+        </div>
+    </div>
+    
+    <div class="chapter">
+        <div class="chapter-header" onclick="toggleChapter(this)">LEVEL 37: EVENTS</div>
+        <div class="chapter-content">
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+            
+            <h3>Speedrun</h3>
+            <ul>
+                <li>Events allow a class to notify interested observers that something occurred.</li>
+                <li>Definition: <code><span class="kw">public event</span> <span class="type">Action</span> ThingHappened;</code>.</li>
+                <li>Raise event: <code><span class="meth">ThingHappened</span>();</code> or <code>ThingHappened?.<span class="meth">Invoke</span>();</code>.</li>
+                <li>Subscribe/Unsubscribe: <code>obj.ThingHappened += <span class="meth">Handler</span>;</code> and <code>obj.ThingHappened -= <span class="meth">Handler</span>;</code>.</li>
+                <li>Unsubscribing is important to avoid memory leaks.</li>
+            </ul>
+
+            <h3>Defining and Raising Events</h3>
+            <p>Events allow an object to broadcast notifications without knowing who is listening.</p>
+            <pre><code class="language-csharp"><span class="kw">public class</span> <span class="type">Ship</span>
+{
+    <span class="kw">public event</span> <span class="type">Action</span>? ShipExploded; <span class="comm">// Defined with a delegate type</span>
+
+    <span class="kw">public void</span> <span class="meth">TakeDamage</span>(<span class="kw">int</span> amount)
+    {
+        Health -= amount;
+        <span class="kw">if</span> (Health <= <span class="lit">0</span>)
+            <span class="meth">ShipExploded</span>?.<span class="meth">Invoke</span>(); <span class="comm">// Raising the event safely</span>
+    }
+}</code></pre>
+
+            <h3>Subscribing to Events</h3>
+            <p>Listeners attach methods (handlers) to the event.</p>
+            <pre><code class="language-csharp"><span class="kw">public class</span> <span class="type">SoundEffectManager</span>
+{
+    <span class="kw">public</span> <span class="meth">SoundEffectManager</span>(<span class="type">Ship</span> ship)
+    {
+        ship.ShipExploded += <span class="meth">OnShipExploded</span>; <span class="comm">// Subscribe</span>
+    }
+    
+    <span class="kw">private void</span> <span class="meth">OnShipExploded</span>() => <span class="meth">PlaySound</span>(<span class="str">"Explosion"</span>);
+}</code></pre>
+
+            <h3>EventHandler</h3>
+            <p>Standard pattern using <code>EventHandler</code> and <code>EventArgs</code>.</p>
+            <pre><code class="language-csharp"><span class="kw">public class</span> <span class="type">ExplosionEventArgs</span> : <span class="type">EventArgs</span>
+{
+    <span class="kw">public</span> <span class="type">Point</span> Location { <span class="kw">get</span>; }
+    <span class="kw">public</span> <span class="meth">ExplosionEventArgs</span>(<span class="type">Point</span> location) => Location = location;
+}
+
+<span class="kw">public event</span> <span class="type">EventHandler</span>&lt;<span class="type">ExplosionEventArgs</span>&gt;? ShipExploded;</code></pre>
+            <p>Raising it:</p>
+            <pre><code class="language-csharp">ShipExploded?.<span class="meth">Invoke</span>(<span class="kw">this</span>, <span class="kw">new</span> <span class="type">ExplosionEventArgs</span>(Location));</code></pre>
+
+            <h3>Custom Event Accessors</h3>
+            <p>Like properties, events can have custom <code>add</code> and <code>remove</code> blocks.</p>
+            <pre><code class="language-csharp"><span class="kw">private</span> <span class="type">Action</span>? _shipExploded;
+<span class="kw">public event</span> <span class="type">Action</span> ShipExploded
+{
+    <span class="kw">add</span> { _shipExploded += <span class="kw">value</span>; }
+    <span class="kw">remove</span> { _shipExploded -= <span class="kw">value</span>; }
+}</code></pre>
+            
+            <hr>
+            <button class="close-btn" onclick="toggleChapter(this)">Cerrar</button>
+        </div>
+    </div>
     </div>
     <script>
         function toggleChapter(el){
