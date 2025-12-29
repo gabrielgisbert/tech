@@ -3,20 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Git: GestorVehiculos</title>
+    <title>Guía Técnica Git: Proyecto GestorVehiculos</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-main: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --accent: #61dafb;
-            --accent-hover: #21a1f1;
-            --terminal-bg: #0d0d0d;
-            --git-green: #2ecc71;
-            --git-red: #e74c3c;
-            --git-yellow: #f1c40f;
-            --git-blue: #3498db;
+            /* Variables Dark Mode (Por defecto) */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent: #f97316; /* Git Orange */
+            --code-bg: #1e1e1e;
+            --terminal-bg: #000000;
+            --terminal-text: #cccccc;
+            --diff-green: #22c55e;
+            --diff-red: #ef4444;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        .light-mode {
+            /* Variables Light Mode */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --accent: #ea580c;
+            --code-bg: #f1f5f9;
+            --terminal-bg: #1e293b; /* Terminal siempre oscura para contraste */
+            --terminal-text: #e2e8f0;
+            --border: #cbd5e1;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -25,147 +41,145 @@
             padding: 0;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
-            padding-bottom: 80px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- Header --- */
+        /* Layout */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem 6rem 1rem;
+        }
+
         header {
-            background-color: var(--card-bg);
-            padding: 2rem 1rem;
             text-align: center;
-            border-bottom: 2px solid var(--accent);
-            margin-bottom: 2rem;
-            position: relative;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        header h1 {
+        h1 {
+            font-size: 2.5rem;
             color: var(--accent);
-            font-size: 2rem;
             margin-bottom: 0.5rem;
         }
 
-        header p {
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto;
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            border-left: 4px solid var(--accent);
+            padding-left: 1rem;
         }
 
-        /* --- Layout --- */
-        main {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 1rem;
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
         }
 
+        /* Sections */
         section {
-            background-color: var(--card-bg);
+            background-color: var(--bg-secondary);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            border: 1px solid #333;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
         }
 
-        h2 {
-            border-left: 4px solid var(--accent);
-            padding-left: 10px;
-            margin-bottom: 1rem;
-            color: #fff;
-        }
-
-        .context-note {
-            background-color: rgba(97, 218, 251, 0.1);
-            border-radius: 4px;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            border-left: 2px solid var(--accent);
-        }
-
-        .explanation {
-            margin-bottom: 1rem;
-            color: var(--text-muted);
-        }
-
-        /* --- Code Block --- */
-        .code-block {
-            background-color: #000;
-            color: #fff;
+        /* Code Blocks (Comando a ejecutar) */
+        .command-block {
+            background-color: var(--code-bg);
             padding: 1rem;
             border-radius: 6px;
             font-family: 'Consolas', 'Monaco', monospace;
-            overflow-x: auto;
+            font-size: 0.95rem;
+            color: var(--text-primary);
             margin-bottom: 1rem;
-            border: 1px solid #333;
+            border-left: 3px solid var(--accent);
+            overflow-x: auto;
         }
 
-        .code-block .cmd-prompt {
+        .command-block::before {
+            content: "$ ";
             color: var(--accent);
-            user-select: none;
-            margin-right: 8px;
+            font-weight: bold;
         }
 
-        /* --- Terminal Simulation --- */
+        /* Terminal Simulation */
         .terminal {
             background-color: var(--terminal-bg);
-            color: #ccc;
-            padding: 1rem;
+            color: var(--terminal-text);
+            padding: 1.5rem;
             border-radius: 6px;
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 0.9rem;
             overflow-x: auto;
-            border-top: 3px solid #333;
             white-space: pre;
+            margin-top: 1rem;
+            position: relative;
         }
 
-        .t-green { color: var(--git-green); }
-        .t-red { color: var(--git-red); }
-        .t-yellow { color: var(--git-yellow); }
-        .t-blue { color: var(--git-blue); }
-        .t-muted { color: #666; }
-        .t-bold { font-weight: bold; color: #fff; }
-
-        /* --- Summary Table --- */
-        .table-container {
-            overflow-x: auto;
+        .terminal::before {
+            content: "Git Bash";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            color: #aaa;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
         }
 
-        table {
+        .text-green { color: var(--diff-green); }
+        .text-red { color: var(--diff-red); }
+        .text-muted { color: #64748b; font-style: italic; }
+
+        /* Summary Table */
+        .summary-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
-            font-size: 0.9rem;
+            margin-top: 2rem;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        th, td {
+        .summary-table th, .summary-table td {
+            padding: 1rem;
             text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border);
         }
 
-        th {
-            background-color: #2c2c2c;
+        .summary-table th {
+            background-color: var(--code-bg);
             color: var(--accent);
         }
 
-        tr:hover {
-            background-color: #252525;
+        .summary-table code {
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
         }
 
-        /* --- Floating Menu (FAB) --- */
-        .fab {
+        /* Floating Action Button & Menu */
+        .fab-container {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        .fab {
             width: 60px;
             height: 60px;
             background-color: var(--accent);
@@ -173,428 +187,364 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            color: white;
+            font-size: 1.5rem;
             cursor: pointer;
-            z-index: 1000;
-            border: none;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
             transition: transform 0.2s;
+            border: none;
         }
 
         .fab:hover {
             transform: scale(1.1);
-            background-color: var(--accent-hover);
         }
 
-        .fab span {
-            font-size: 24px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        /* --- Side Menu --- */
-        .side-menu {
+        .menu-overlay {
             position: fixed;
-            top: 0;
-            right: -300px;
-            width: 280px;
-            height: 100%;
-            background-color: #1a1a1a;
-            box-shadow: -4px 0 10px rgba(0,0,0,0.5);
-            transition: right 0.3s ease;
-            z-index: 999;
-            padding: 2rem 1rem;
+            bottom: 6rem;
+            right: 2rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            width: 250px;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            max-height: 70vh;
             overflow-y: auto;
         }
 
-        .side-menu.active {
-            right: 0;
+        .menu-overlay.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: all;
         }
 
-        .side-menu h3 {
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #333;
-            padding-bottom: 0.5rem;
-        }
-
-        .side-menu ul {
+        .menu-overlay ul {
             list-style: none;
         }
 
-        .side-menu li {
-            margin-bottom: 0.8rem;
+        .menu-overlay li {
+            margin-bottom: 0.5rem;
         }
 
-        .side-menu a {
-            color: var(--text-main);
+        .menu-overlay a {
+            color: var(--text-primary);
             text-decoration: none;
             display: block;
-            padding: 8px;
+            padding: 0.5rem;
             border-radius: 4px;
-            transition: background 0.2s;
+            transition: background-color 0.2s;
+            font-size: 0.9rem;
         }
 
-        .side-menu a:hover {
-            background-color: #333;
+        .menu-overlay a:hover {
+            background-color: var(--code-bg);
             color: var(--accent);
         }
 
-        .overlay {
+        /* Theme Toggle */
+        .theme-toggle {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 998;
-            display: none;
+            top: 2rem;
+            right: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+            z-index: 99;
         }
 
-        .overlay.active {
-            display: block;
-        }
-
-        /* --- Responsive Tweaks --- */
+        /* Responsive */
         @media (max-width: 600px) {
-            header h1 { font-size: 1.5rem; }
-            section { padding: 1rem; }
-            .terminal { font-size: 0.75rem; }
+            h1 { font-size: 1.8rem; }
+            .container { padding-top: 5rem; }
+            .fab { bottom: 1.5rem; right: 1.5rem; }
+            .menu-overlay { right: 1rem; width: auto; left: 1rem; bottom: 5rem; }
+            .theme-toggle { top: 1rem; right: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Git: Proyecto GestorVehiculos</h1>
-        <p>Guía secuencial evolutiva basada en el proyecto C#</p>
-    </header>
+    <button class="theme-toggle" id="themeBtn">☀/☾ Modo</button>
 
-    <main>
+    <div class="container">
+        <header>
+            <h1>GestorVehiculos</h1>
+            <p>Guía de Referencia Técnica Secuencial (.NET / Git)</p>
+            <p style="font-size: 0.9rem; opacity: 0.8;">Instructor: Senior DevOps | Audiencia: Desarrollador C#</p>
+        </header>
 
-        <section id="config">
-            <h2>1. git config</h2>
-            <div class="context-note">
-                <strong>Inicio:</strong> Antes de crear el proyecto, debemos configurar nuestra identidad. Estos datos quedarán sellados en cada commit.
-            </div>
-            <p class="explanation">Configura los valores predeterminados globales para autoría.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git config --global user.name "TuNombre"<br>
-                <span class="cmd-prompt">$</span>git config --global user.email "tu@email.com"
-            </div>
-            <div class="terminal">
-<span class="t-muted"># No hay salida visible si es exitoso. Verificamos:</span>
-$ git config --global user.name
-TuNombre
-            </div>
-        </section>
+        <main id="main-content">
+            
+            <section id="cmd-config">
+                <h2>1. Configuración Global (git config)</h2>
+                <p><strong>Narrativa:</strong> Antes de escribir código en <code>Vehiculo.cs</code>, necesitamos firmar nuestro trabajo. En .NET el compilador sabe quién eres, pero Git requiere una identidad explícita para la trazabilidad de auditoría.</p>
+                <div class="command-block">git config --global user.name "DevOps Instructor"
+git config --global user.email "instructor@devops.com"</div>
+                <div class="terminal">
+<span class="text-muted">(Sin salida. Si el comando es exitoso, Git retorna el control silenciosamente)</span>
+                </div>
+            </section>
 
-        <section id="init">
-            <h2>2. git init</h2>
-            <div class="context-note">
-                <strong>Situación:</strong> Hemos creado la carpeta <code>GestorVehiculos/</code> y el archivo inicial <code>Vehiculo.cs</code>. Ahora debemos iniciar el rastreo.
-            </div>
-            <p class="explanation">Crea la subcarpeta oculta <code>.git</code> transformando el directorio en un repositorio.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git init
-            </div>
-            <div class="terminal">
-<span class="t-muted">Initialized empty Git repository in /Ruta/GestorVehiculos/.git/</span>
-hint: Using 'master' as the name for the initial branch. This default branch name
-hint: is subject to change. To configure the initial branch name to use in all
-hint: of your new repositories, which will suppress this warning, call:
-            </div>
-        </section>
+            <section id="cmd-init">
+                <h2>2. Inicialización (git init)</h2>
+                <p><strong>Narrativa:</strong> Tienes la carpeta de la solución vacía. Vamos a encender el motor de Git creando la base de datos oculta <code>.git</code>.</p>
+                <div class="command-block">git init</div>
+                <div class="terminal">
+<span class="text-green">+ Initialized empty Git repository in C:/Proyectos/GestorVehiculos/.git/</span>
+                </div>
+            </section>
 
-        <section id="branch-m">
-            <h2>3. git branch -m</h2>
-            <div class="context-note">
-                <strong>Estandarización:</strong> Git usó "master" por defecto, pero GitHub y la industria usan "main".
-            </div>
-            <p class="explanation">Renombra la rama actual para alinearse con los estándares modernos.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git branch -m main
-            </div>
-            <div class="terminal">
-<span class="t-muted"># (El indicador de rama en la consola cambiaría de master a main)</span>
-            </div>
-        </section>
+            <section id="cmd-commit">
+                <h2>3. Flujo de Trabajo (add & commit)</h2>
+                <p><strong>Narrativa:</strong> Acabas de crear <code>Vehiculo.cs</code>. Git lo detecta como "Untracked". Primero lo preparamos (stage) y luego guardamos la "foto" (commit) en la historia.</p>
+                <div class="command-block">git add Vehiculo.cs
+git commit -m "Initial commit: Estructura base Vehiculo"</div>
+                <div class="terminal">
+<span class="text-green">+ [main (root-commit) 8f3a1b2] Initial commit: Estructura base Vehiculo</span>
+<span class="text-green">+  1 file changed, 10 insertions(+)</span>
+<span class="text-green">+  create mode 100644 Vehiculo.cs</span>
+                </div>
+            </section>
 
-        <section id="status">
-            <h2>4. git status</h2>
-            <div class="context-note">
-                <strong>Análisis:</strong> Tenemos <code>Vehiculo.cs</code> creado. ¿Qué ve Git?
-            </div>
-            <p class="explanation">Muestra el estado del árbol de trabajo (archivos modificados, staged o untracked).</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git status
-            </div>
-            <div class="terminal">
+            <section id="cmd-status">
+                <h2>4. Estado del Proyecto (git status)</h2>
+                <p><strong>Narrativa:</strong> Añades la propiedad <code>public int Ruedas { get; set; }</code>. Necesitas confirmar qué ha detectado Git antes de seguir.</p>
+                <div class="command-block">git status</div>
+                <div class="terminal">
 On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+<span class="text-red">-       modified:   Vehiculo.cs</span>
 
-No commits yet
+no changes added to commit (use "git add" and/or "git commit -a")
+                </div>
+            </section>
 
+            <section id="cmd-log">
+                <h2>5. Historial (git log)</h2>
+                <p><strong>Narrativa:</strong> Quieres auditar la evolución del proyecto para ver quién hizo qué y cuándo.</p>
+                <div class="command-block">git log</div>
+                <div class="terminal">
+commit 8f3a1b2c3d4e5f6g7h8i9j0k (HEAD -> main)
+Author: DevOps Instructor <instructor@devops.com>
+Date:   Mon Dec 29 10:00:00 2025 +0100
+
+    Initial commit: Estructura base Vehiculo
+                </div>
+            </section>
+
+            <section id="cmd-ignore">
+                <h2>6. Ignorar Archivos (.gitignore)</h2>
+                <p><strong>Narrativa:</strong> Al compilar aparecen carpetas <code>bin/</code> y <code>obj/</code>. No queremos ensuciar el repo con binarios.</p>
+                <div class="command-block">echo "bin/" > .gitignore
+git status</div>
+                <div class="terminal">
+On branch main
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-<span class="t-red">	Vehiculo.cs</span>
+<span class="text-green">+       .gitignore</span>
 
-nothing added to commit but untracked files present (use "git add" to track)
-            </div>
-        </section>
+<span class="text-muted">(Nota: bin/ ya no aparece en la lista)</span>
+                </div>
+            </section>
 
-        <section id="add">
-            <h2>5. git add</h2>
-            <div class="context-note">
-                <strong>Acción:</strong> Decidimos que <code>Vehiculo.cs</code> está listo para ser guardado. Lo pasamos al área de preparación (Stage).
-            </div>
-            <p class="explanation">Añade contenidos del archivo al índice (Staging Area).</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git add Vehiculo.cs
-            </div>
-            <div class="terminal">
-<span class="t-muted"># Si ejecutamos git status ahora:</span>
-On branch main
-
-No commits yet
-
-Changes to be committed:
-  (use "git rm --cached <file>..." to unstage)
-<span class="t-green">	new file:   Vehiculo.cs</span>
-            </div>
-        </section>
-
-        <section id="commit">
-            <h2>6. git commit</h2>
-            <div class="context-note">
-                <strong>Hito:</strong> Tomamos la "foto" definitiva del código base.
-            </div>
-            <p class="explanation">Crea un punto de guardado en la historia con los archivos del Stage.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git commit -m "Crear clase base Vehiculo"
-            </div>
-            <div class="terminal">
-[main (root-commit) cee84b4] Crear clase base Vehiculo
- 1 file changed, 15 insertions(+), 0 deletions(-)
- create mode 100644 Vehiculo.cs
-            </div>
-        </section>
-
-        <section id="ignore">
-            <h2>7. .gitignore</h2>
-            <div class="context-note">
-                <strong>Problema:</strong> Al compilar C# (dotnet build), aparecieron carpetas <code>bin/</code> y <code>obj/</code>. No queremos subir binarios.
-            </div>
-            <p class="explanation">Archivo de configuración para ocultar archivos generados o temporales del rastreo de Git.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>echo "bin/" >> .gitignore
-            </div>
-            <div class="terminal">
-<span class="t-muted"># Al hacer git status:</span>
-On branch main
-Untracked files:
-<span class="t-red">	.gitignore</span>
-
-<span class="t-muted"># Nota: bin/ y obj/ YA NO aparecen en la lista.</span>
-            </div>
-        </section>
-
-        <section id="diff">
-            <h2>8. git diff</h2>
-            <div class="context-note">
-                <strong>Cambio:</strong> Hemos editado <code>Vehiculo.cs</code> para añadir la propiedad <code>Matricula</code>. Revisamos antes de añadir.
-            </div>
-            <p class="explanation">Muestra las diferencias línea por línea entre el directorio de trabajo y el último commit.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git diff
-            </div>
-            <div class="terminal">
+            <section id="cmd-diff">
+                <h2>7. Comparar Cambios (git diff)</h2>
+                <p><strong>Narrativa:</strong> Antes de guardar la propiedad <code>Ruedas</code>, revisas línea a línea qué cambió.</p>
+                <div class="command-block">git diff</div>
+                <div class="terminal">
 diff --git a/Vehiculo.cs b/Vehiculo.cs
-index b851255..4c09908 100644
+index 6a5b4c..7d8e9f 100644
 --- a/Vehiculo.cs
 +++ b/Vehiculo.cs
-@@ -5,4 +5,5 @@
+@@ -10,4 +10,5 @@
      public string Marca { get; set; }
-<span class="t-red">-    public string Modelo { get; set; }</span>
-<span class="t-green">+    public string Modelo { get; set; } // Modificado</span>
-<span class="t-green">+    public string Matricula { get; set; } // Nueva propiedad</span>
-            </div>
-        </section>
+<span class="text-green">+    public int Ruedas { get; set; }</span>
+ }
+                </div>
+            </section>
 
-        <section id="log">
-            <h2>9. git log</h2>
-            <div class="context-note">
-                <strong>Auditoría:</strong> Queremos ver la lista cronológica de todo lo que ha pasado en <code>GestorVehiculos</code>.
-            </div>
-            <p class="explanation">Muestra el registro de commits (hash, autor, fecha y mensaje).</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git log --oneline
-            </div>
-            <div class="terminal">
-<span class="t-yellow">431281d (HEAD -> main)</span> Añadir .gitignore y propiedad Matricula
-<span class="t-yellow">cee84b4</span> Crear clase base Vehiculo
-            </div>
-        </section>
+            <section id="cmd-restore">
+                <h2>8. Deshacer Cambios (git restore)</h2>
+                <p><strong>Narrativa:</strong> Borraste por error el constructor y guardaste el archivo. El código no compila. Necesitas el "Ctrl+Z" definitivo.</p>
+                <div class="command-block">git restore Vehiculo.cs</div>
+                <div class="terminal">
+<span class="text-muted">(Sin salida. El archivo en disco ha vuelto a su estado original)</span>
+                </div>
+            </section>
 
-        <section id="switch">
-            <h2>10. git switch -c</h2>
-            <div class="context-note">
-                <strong>Feature:</strong> Vamos a crear la clase <code>Avion.cs</code>. Es experimental, así que lo haremos en una rama aislada.
-            </div>
-            <p class="explanation">Crea una nueva rama y te mueve a ella inmediatamente.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git switch -c feature/avion
-            </div>
-            <div class="terminal">
-Switched to a new branch 'feature/avion'
-            </div>
-        </section>
+            <section id="cmd-mv">
+                <h2>9. Renombrar (git mv)</h2>
+                <p><strong>Narrativa:</strong> Por refactorización, renombras <code>Vehiculo.cs</code> a <code>BaseVehiculo.cs</code> manteniendo la historia.</p>
+                <div class="command-block">git mv Vehiculo.cs BaseVehiculo.cs
+git status</div>
+                <div class="terminal">
+On branch main
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+<span class="text-green">+       renamed:    Vehiculo.cs -> BaseVehiculo.cs</span>
+                </div>
+            </section>
 
-        <section id="merge">
-            <h2>11. git merge</h2>
-            <div class="context-note">
-                <strong>Integración:</strong> El avión vuela correctamente. Queremos fusionar los cambios de <code>feature/avion</code> en <code>main</code>.
-            </div>
-            <p class="explanation">Fusiona el historial de una rama en la rama actual.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git switch main
-<span class="cmd-prompt">$</span>git merge feature/avion
-            </div>
-            <div class="terminal">
-Updating cee84b4..431281d
+            <section id="cmd-branch">
+                <h2>10. Ramas (git switch -c)</h2>
+                <p><strong>Narrativa:</strong> Creas una rama experimental para <code>Avion.cs</code> sin romper el código principal.</p>
+                <div class="command-block">git branch feature/avion
+git switch feature/avion</div>
+                <div class="terminal">
+<span class="text-green">+ Switched to branch 'feature/avion'</span>
+                </div>
+            </section>
+
+            <section id="cmd-merge">
+                <h2>11. Fusionar (git merge)</h2>
+                <p><strong>Narrativa:</strong> El avión vuela bien. Traemos los cambios de vuelta a <code>main</code>.</p>
+                <div class="command-block">git switch main
+git merge feature/avion</div>
+                <div class="terminal">
+Updating 8f3a1b2..9c4d5e6
 Fast-forward
- Avion.cs | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
- create mode 100644 Avion.cs
-            </div>
-        </section>
+<span class="text-green">+ Avion.cs | 12 ++++++++++++</span>
+<span class="text-green">+ 1 file changed, 12 insertions(+)</span>
+<span class="text-green">+ create mode 100644 Avion.cs</span>
+                </div>
+            </section>
 
-        <section id="remote">
-            <h2>12. git push</h2>
-            <div class="context-note">
-                <strong>Nube:</strong> Vinculamos con GitHub y subimos el proyecto.
-            </div>
-            <p class="explanation">Sube los commits locales al repositorio remoto.</p>
-            <div class="code-block">
-                <span class="cmd-prompt">$</span>git remote add origin https://github.com/user/repo.git
-<span class="cmd-prompt">$</span>git push -u origin main
-            </div>
-            <div class="terminal">
-Enumerating objects: 9, done.
-Writing objects: 100% (9/9), 890 bytes | 890.00 KiB/s, done.
-To https://github.com/user/repo.git
- * [new branch]      main -> main
-Branch 'main' set up to track remote branch 'main' from 'origin'.
-            </div>
-        </section>
+            <section id="cmd-conflict">
+                <h2>12. Conflictos</h2>
+                <p><strong>Narrativa:</strong> Dos devs cambiaron la misma línea en <code>BaseVehiculo.cs</code> (int vs string). Git entra en pánico.</p>
+                <div class="command-block">git merge hotfix</div>
+                <div class="terminal">
+<span class="text-red">- CONFLICT (content): Merge conflict in BaseVehiculo.cs</span>
+<span class="text-red">- Automatic merge failed; fix conflicts and then commit the result.</span>
+                </div>
+            </section>
 
-        <section id="resumen">
-            <h2>Tabla Resumen</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Comando</th>
-                            <th>Propósito</th>
-                            <th>Ejemplo</th>
-                            <th>Visual</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>git init</td>
-                            <td>Crear repo</td>
-                            <td><code>git init</code></td>
-                            <td>📂 .git</td>
-                        </tr>
-                        <tr>
-                            <td>git status</td>
-                            <td>Ver estado</td>
-                            <td><code>git status</code></td>
-                            <td>🔴/🟢</td>
-                        </tr>
-                        <tr>
-                            <td>git add</td>
-                            <td>Preparar (Stage)</td>
-                            <td><code>git add .</code></td>
-                            <td>🟢 New</td>
-                        </tr>
-                        <tr>
-                            <td>git commit</td>
-                            <td>Guardar</td>
-                            <td><code>git commit -m "msg"</code></td>
-                            <td>📸 Hash</td>
-                        </tr>
-                        <tr>
-                            <td>git diff</td>
-                            <td>Comparar código</td>
-                            <td><code>git diff</code></td>
-                            <td>📝 +/-</td>
-                        </tr>
-                        <tr>
-                            <td>git switch -c</td>
-                            <td>Nueva rama</td>
-                            <td><code>git switch -c rama</code></td>
-                            <td>🔀 Branch</td>
-                        </tr>
-                        <tr>
-                            <td>git merge</td>
-                            <td>Fusionar</td>
-                            <td><code>git merge rama</code></td>
-                            <td>🔗 Union</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            <section id="cmd-stash">
+                <h2>13. Guardado Temporal (git stash)</h2>
+                <p><strong>Narrativa:</strong> Tienes código roto en <code>Avion.cs</code> pero debes cambiar de rama urgente. Lo guardas en el "limbo".</p>
+                <div class="command-block">git stash push -m "WIP: Refactorización Avion"</div>
+                <div class="terminal">
+<span class="text-green">+ Saved working directory and index state On feature/avion: WIP: Refactorización Avion</span>
+HEAD is now at 9c4d5e6 Añadida clase Avion
+                </div>
+            </section>
 
-    </main>
+            <section id="cmd-tag">
+                <h2>14. Etiquetas (git tag)</h2>
+                <p><strong>Narrativa:</strong> Versión 1.0 lista para producción. La congelamos con un tag.</p>
+                <div class="command-block">git tag -a v1.0 -m "Versión 1.0 estable"</div>
+                <div class="terminal">
+<span class="text-muted">(Sin salida. Objeto creado internamente)</span>
+                </div>
+            </section>
 
-    <button class="fab" id="menuBtn" title="Abrir Menú">
-        <span>☰</span>
-    </button>
+            <section id="cmd-clean">
+                <h2>15. Limpieza (git branch -d)</h2>
+                <p><strong>Narrativa:</strong> La feature ya se fusionó. Borramos la rama sobrante.</p>
+                <div class="command-block">git branch -d feature/avion</div>
+                <div class="terminal">
+<span class="text-green">+ Deleted branch feature/avion (was 9c4d5e6).</span>
+                </div>
+            </section>
+            
+            <section id="summary">
+                <h2>Tabla Resumen</h2>
+                <div style="overflow-x: auto;">
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Comando</th>
+                                <th>Uso</th>
+                                <th>Visual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>git init</code></td><td>Crear repositorio</td><td>📂✨</td></tr>
+                            <tr><td><code>git add .</code></td><td>Preparar cambios</td><td>📦</td></tr>
+                            <tr><td><code>git commit</code></td><td>Guardar versión</td><td>📸</td></tr>
+                            <tr><td><code>git status</code></td><td>Ver estado</td><td>🚦</td></tr>
+                            <tr><td><code>git diff</code></td><td>Ver diferencias</td><td>🔍</td></tr>
+                            <tr><td><code>git switch</code></td><td>Cambiar rama</td><td>🔀</td></tr>
+                            <tr><td><code>git merge</code></td><td>Fusionar ramas</td><td>🔗</td></tr>
+                            <tr><td><code>git stash</code></td><td>Guardar temporal</td><td>🛡️</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-    <div class="overlay" id="overlay"></div>
-    
-    <nav class="side-menu" id="sideMenu">
-        <h3>Comandos Git</h3>
-        <ul>
-            <li><a href="#config">1. Configuración</a></li>
-            <li><a href="#init">2. Inicialización</a></li>
-            <li><a href="#branch-m">3. Renombrar Rama</a></li>
-            <li><a href="#status">4. Verificar Estado</a></li>
-            <li><a href="#add">5. Staging (Add)</a></li>
-            <li><a href="#commit">6. Confirmar (Commit)</a></li>
-            <li><a href="#ignore">7. Ignorar Archivos</a></li>
-            <li><a href="#diff">8. Ver Diferencias</a></li>
-            <li><a href="#log">9. Historial (Log)</a></li>
-            <li><a href="#switch">10. Ramas (Switch)</a></li>
-            <li><a href="#merge">11. Fusión (Merge)</a></li>
-            <li><a href="#remote">12. Remoto (Push)</a></li>
-            <li><a href="#resumen">★ Tabla Resumen</a></li>
-        </ul>
-    </nav>
+        </main>
+
+        <footer style="text-align: center; margin-top: 3rem; color: var(--text-secondary); font-size: 0.8rem;">
+            <p>Generado por Instructor Senior DevOps | Basado en el PDF "Git y GitHub desde Cero"</p>
+        </footer>
+    </div>
+
+    <div class="fab-container">
+        <div class="menu-overlay" id="menu">
+            <ul>
+                <li><a href="#cmd-config" onclick="toggleMenu()">Configuración</a></li>
+                <li><a href="#cmd-init" onclick="toggleMenu()">Init</a></li>
+                <li><a href="#cmd-commit" onclick="toggleMenu()">Add & Commit</a></li>
+                <li><a href="#cmd-status" onclick="toggleMenu()">Status</a></li>
+                <li><a href="#cmd-log" onclick="toggleMenu()">Log</a></li>
+                <li><a href="#cmd-ignore" onclick="toggleMenu()">Ignore</a></li>
+                <li><a href="#cmd-diff" onclick="toggleMenu()">Diff</a></li>
+                <li><a href="#cmd-restore" onclick="toggleMenu()">Restore</a></li>
+                <li><a href="#cmd-mv" onclick="toggleMenu()">Move</a></li>
+                <li><a href="#cmd-branch" onclick="toggleMenu()">Branch & Switch</a></li>
+                <li><a href="#cmd-merge" onclick="toggleMenu()">Merge</a></li>
+                <li><a href="#cmd-conflict" onclick="toggleMenu()">Conflictos</a></li>
+                <li><a href="#cmd-stash" onclick="toggleMenu()">Stash</a></li>
+                <li><a href="#cmd-tag" onclick="toggleMenu()">Tag</a></li>
+                <li><a href="#cmd-clean" onclick="toggleMenu()">Delete Branch</a></li>
+            </ul>
+        </div>
+        <button class="fab" onclick="toggleMenu()">☰</button>
+    </div>
 
     <script>
-        // Lógica simple para el menú
-        const menuBtn = document.getElementById('menuBtn');
-        const sideMenu = document.getElementById('sideMenu');
-        const overlay = document.getElementById('overlay');
-        const links = document.querySelectorAll('.side-menu a');
-
+        // Lógica del Menú
         function toggleMenu() {
-            sideMenu.classList.toggle('active');
-            overlay.classList.toggle('active');
-            menuBtn.innerHTML = sideMenu.classList.contains('active') ? '<span>✕</span>' : '<span>☰</span>';
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('active');
         }
 
-        menuBtn.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', toggleMenu);
+        // Cerrar menú al hacer click fuera
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('menu');
+            const fab = document.querySelector('.fab');
+            if (!menu.contains(event.target) && !fab.contains(event.target) && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
 
-        // Cerrar menú al hacer clic en un enlace
-        links.forEach(link => {
-            link.addEventListener('click', () => {
-                if(sideMenu.classList.contains('active')) {
-                    toggleMenu();
-                }
+        // Lógica Dark/Light Mode
+        const themeBtn = document.getElementById('themeBtn');
+        const body = document.body;
+
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+        });
+
+        // Smooth Scroll para links internos (polyfill básico para navegadores viejos, aunque CSS scroll-behavior suele bastar)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
     </script>
