@@ -3,116 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Tech Guides | Índice</title>
-    
+    <title>Knowledge Hub - Mis Resúmenes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS Reset Básico para consistencia */
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Variables CSS para facilitar cambios futuros */
         :root {
-            --primary-color: #007bff; /* Azul profesional */
-            --primary-hover: #0056b3;
-            --background-color: #f4f7f6; /* Fondo gris muy claro */
-            --card-background: #ffffff; /* Fondo de tarjeta blanco */
-            --text-color: #333;
-            --border-radius: 8px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --primary-color: #2563eb;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --transition: all 0.3s ease;
         }
 
-        /* Estilo general del cuerpo */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Contenedor principal para centrar y limitar el ancho */
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Título de la página */
         h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.2em;
-            font-weight: 600;
-        }
-
-        /* Lista de guías (la tabla de contenido) */
-        .guide-list {
-            list-style: none; /* Eliminar viñetas */
-            padding: 0;
-            display: grid;
-            gap: 20px;
-            /* Diseño de cuadrícula adaptable para pantallas grandes */
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        }
-
-        /* Estilo de cada elemento de la lista (el contenedor del botón/tarjeta) */
-        .guide-list li {
-            box-shadow: var(--shadow);
-            border-radius: var(--border-radius);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Efecto hover sutil para la interacción */
-        .guide-list li:hover {
-            transform: translateY(-5px); /* Pequeño levantamiento */
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        /* El enlace (que actúa como botón grande) */
-        .guide-link {
-            display: block;
-            width: 100%;
-            padding: 25px 30px;
-            background-color: var(--card-background);
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 1.2em;
             font-weight: 700;
-            border-radius: var(--border-radius);
-            text-align: left;
-            border: 1px solid #e0e0e0; /* Borde sutil */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
         }
 
-        /* Efecto hover en el enlace */
-        .guide-link:hover {
+        p.subtitle {
+            margin-bottom: 40px;
+            color: #64748b;
+        }
+
+        /* Contenedor de botones (Grid) */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .btn-card {
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .btn-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Botón Flotante (FAB) */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
             background-color: var(--primary-color);
-            color: var(--card-background); /* Texto blanco sobre fondo azul */
-            border-color: var(--primary-hover);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Menú Lateral (Overlay) */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: var(--card-bg);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 1001;
+            transition: var(--transition);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .side-menu.active {
+            right: 0;
+        }
+
+        .side-menu h2 {
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+
+        .menu-link {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: background 0.2s;
+        }
+
+        .menu-link:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        .overlay-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay-bg.active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📚 Guías y Recursos Técnicos</h1>
 
-        <ul class="guide-list">
-            <li>
-                <a href="C%23%20Guide.html" class="guide-link">
-                    C# Guide: Introducción y Fundamentos
-                </a>
-            </li>
-            <li>
-                <a href="https://docs.google.com/spreadsheets/d/1EbJROfgn9v4vWoLfqhMMgrPnptqxFSt5MSrtRWIQrOg/edit?gid=1499996445#gid=1499996445" class="guide-link">
-                    AI & Data Courses
-                </a>
-            </li>
+    <h1>Knowledge Hub</h1>
+    <p class="subtitle">Selecciona una tecnología para ver el resumen</p>
 
-            
-            </ul>
+    <div id="gridContainer" class="grid-container"></div>
+
+    <div class="fab" onclick="toggleMenu()">☰</div>
+
+    <div id="overlay" class="overlay-bg" onclick="toggleMenu()"></div>
+
+    <div id="sideMenu" class="side-menu">
+        <h2>Acceso Rápido</h2>
+        <div id="menuList"></div>
     </div>
+
+    <script>
+        // LISTADO DE TUS PÁGINAS (Fácil de actualizar)
+        const paginas = [
+            { nombre: "C# Guide", url: "C# Guide.html" },
+            { nombre: "C Sharp", url: "CSharp.html" },
+            { nombre: "Git Tutorial", url: "GitTutorial.html" },
+            { nombre: "Git Basic", url: "git.html" }
+        ];
+
+        const gridContainer = document.getElementById('gridContainer');
+        const menuList = document.getElementById('menuList');
+
+        // Función para generar los elementos
+        function renderizar() {
+            paginas.forEach(pg => {
+                // Crear Card para la Grid
+                const card = document.createElement('a');
+                card.href = pg.url;
+                card.className = 'btn-card';
+                card.innerHTML = `<span>${pg.nombre}</span>`;
+                gridContainer.appendChild(card);
+
+                // Crear enlace para el menú lateral
+                const link = document.createElement('a');
+                link.href = pg.url;
+                link.className = 'menu-link';
+                link.innerText = pg.nombre;
+                menuList.appendChild(link);
+            });
+        }
+
+        // Abrir/Cerrar menú
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Inicializar
+        renderizar();
+    </script>
 </body>
 </html>
