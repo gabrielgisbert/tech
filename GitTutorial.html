@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Git & GitHub: Simulación Real</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #475569;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --border: #e2e8f0;
+            --cto-color: #7c3aed;
+            --p1-color: #0284c7;
+            --p2-color: #059669;
+            --accent: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-top: 60px; /* Space for fixed header */
+        }
+
+        /* Header & Nav */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .menu-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: var(--bg-body);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .header-title {
+            margin-left: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: -300px;
+            width: 300px;
+            height: calc(100vh - 60px);
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            z-index: 999;
+            padding: 20px;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: block;
+            padding: 8px;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .sidebar a:hover {
+            color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .sidebar .sub-link {
+            padding-left: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #0f172a; line-height: 1.2; }
+        h2 { font-size: 1.8rem; margin: 3rem 0 1.5rem; color: #0f172a; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        h3 { font-size: 1.4rem; margin: 2rem 0 1rem; color: #334155; }
+        h4 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; color: #475569; }
+        p { margin-bottom: 1rem; color: #334155; }
+
+        /* Roles Cards */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0 40px;
+        }
+
+        .role-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .role-cto { background-color: var(--cto-color); }
+        .role-p1 { background-color: var(--p1-color); }
+        .role-p2 { background-color: var(--p2-color); }
+
+        /* Steps */
+        .step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        p > code {
+            background: #e2e8f0;
+            color: #d63384;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* Alerts & Notes */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .alert-danger {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        /* Overlay for mobile when menu is open */
+        .overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 60px);
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 998;
+        }
+        .overlay.active { display: block; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .sidebar { width: 85%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <button class="menu-btn" onclick="toggleMenu()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <span>Índice</span>
+    </button>
+    <div class="header-title">Taller Git & GitHub: Simulación Profesional</div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<nav class="sidebar" id="sidebar">
+    <ul>
+        <li><a href="#intro" onclick="toggleMenu()">Inicio & Escenario</a></li>
+        <li><strong>Fase 1: Inicialización</strong></li>
+        <li><a href="#paso1" class="sub-link" onclick="toggleMenu()">1. Setup & Gitignore</a></li>
+        <li><a href="#paso2" class="sub-link" onclick="toggleMenu()">2. Git Init & Commit</a></li>
+        <li><a href="#paso3" class="sub-link" onclick="toggleMenu()">3. Conexión Remota</a></li>
+        
+        <li><strong>Fase 2: Desarrollo Paralelo</strong></li>
+        <li><a href="#paso4" class="sub-link" onclick="toggleMenu()">4. Clonado (Onboarding)</a></li>
+        <li><a href="#paso5" class="sub-link" onclick="toggleMenu()">5. P1: Modelo Datos</a></li>
+        <li><a href="#paso6" class="sub-link" onclick="toggleMenu()">6. P2: Repo SQL</a></li>
+        
+        <li><strong>Fase 3: Integración</strong></li>
+        <li><a href="#paso7" class="sub-link" onclick="toggleMenu()">7. P1: Pull Request</a></li>
+        <li><a href="#paso8" class="sub-link" onclick="toggleMenu()">8. CTO: Merge</a></li>
+        <li><a href="#paso9" class="sub-link" onclick="toggleMenu()">9. P2: Sincronización</a></li>
+        
+        <li><strong>Fase 4: Conflicto</strong></li>
+        <li><a href="#paso10" class="sub-link" onclick="toggleMenu()">10. P1 Modifica Main</a></li>
+        <li><a href="#paso11" class="sub-link" onclick="toggleMenu()">11. P2 Crea Error</a></li>
+        <li><a href="#paso12" class="sub-link" onclick="toggleMenu()">12. El Choque (Fetch/Merge)</a></li>
+        <li><a href="#paso13" class="sub-link" onclick="toggleMenu()">13. Resolución</a></li>
+        
+        <li><strong>Fase 5: Release</strong></li>
+        <li><a href="#paso14" class="sub-link" onclick="toggleMenu()">14. Etiquetado v1.0</a></li>
+        
+        <li><a href="#resumen" onclick="toggleMenu()"><strong>🎓 Cronograma Resumido</strong></a></li>
+    </ul>
+</nav>
+
+<main>
+    <section id="intro">
+        <h1>Simulación de un Ejemplo Real con Git y GitHub</h1>
+        <p>Vamos a realizar una simulación rigurosa y profesional. El objetivo no es solo que copies comandos, sino que entiendas el ciclo de vida del software. Usaremos un flujo de trabajo estándar en la industria conocido como <strong>Feature Branch Workflow</strong>.</p>
+        
+        <div class="alert alert-info">
+            <strong>🛠️ Configuración del Escenario</strong><br>
+            <strong>Proyecto:</strong> TallerAutoManager (Consola C# .NET 8.0).<br>
+            <strong>Repositorio Remoto:</strong> GitHub.
+        </div>
+
+        <h3>👥 Roles del Proyecto</h3>
+        <div class="roles-grid">
+            <div class="role-card">
+                <span class="role-badge role-cto">👑 CTO</span>
+                <p>Configura el proyecto y aprueba cambios críticos.</p>
+            </div>
+            <div class="role-card">
+                <span class="role-badge role-p1">👨‍💻 P1 (Senior)</span>
+                <p>Se encarga de la lógica de negocio (Modelos).</p>
+            </div>
+            <div class="role-card">
+                <span class="role-badge role-p2">👩‍💻 P2 (Junior)</span>
+                <p>Se encarga de la persistencia de datos (Base de Datos).</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>📅 Fase 1: Inicialización del Proyecto</h2>
+
+        <div id="paso1" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 1: Creación del Proyecto y .gitignore</span>
+                <span class="role-badge role-cto">Ejecuta: CTO</span>
+            </div>
+            <p>El CTO crea la estructura base en su máquina local antes de subirla a la nube.</p>
+            <pre><code>mkdir TallerAutoManager
+cd TallerAutoManager
+dotnet new console -n TallerAutoApp
+dotnet new sln
+dotnet sln add TallerAutoApp/TallerAutoApp.csproj
+dotnet new gitignore</code></pre>
+            <div class="alert alert-warning">
+                <strong>⚠️ Nota Importante:</strong> El comando <code>dotnet new gitignore</code> es CRÍTICO. Si se olvida, subirás binarios (.dll, .exe) ensuciando el repositorio. <strong>Nunca subas binarios.</strong>
+            </div>
+        </div>
+
+        <div id="paso2" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 2: Inicialización de Git</span>
+                <span class="role-badge role-cto">Ejecuta: CTO</span>
+            </div>
+            <p>Convertir la carpeta en un repositorio y guardar el estado inicial.</p>
+            <pre><code>git init
+git add .
+git commit -m "chore: setup inicial del proyecto y estructura de solucion"</code></pre>
+        </div>
+
+        <div id="paso3" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 3: Conexión con GitHub</span>
+                <span class="role-badge role-cto">Ejecuta: CTO</span>
+            </div>
+            <p>Subir el código a GitHub. Se asume creado el repo <code>taller-auto-manager</code>.</p>
+            <pre><code>git branch -M main
+git remote add origin https://github.com/empresa/taller-auto-manager.git
+git push -u origin main</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2>📅 Fase 2: Desarrollo Paralelo</h2>
+        <p>El equipo P1 y P2 clona el repositorio y trabaja simultáneamente.</p>
+
+        <div id="paso4" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 4: Onboarding (Clonado)</span>
+                <span class="role-badge role-p1">P1</span> <span class="role-badge role-p2">P2</span>
+            </div>
+            <pre><code>git clone https://github.com/empresa/taller-auto-manager.git
+cd taller-auto-manager</code></pre>
+        </div>
+
+        <div id="paso5" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 5: P1 Crea el Modelo de Datos</span>
+                <span class="role-badge role-p1">Ejecuta: P1</span>
+            </div>
+            <p>P1 crea la rama <code>feature/modelo-cita</code> y la clase <code>Cita.cs</code>.</p>
+            <pre><code>git checkout -b feature/modelo-cita</code></pre>
+            <p><strong>Código añadido (Cita.cs):</strong></p>
+            <pre><code>namespace TallerAutoApp {
+    public class Cita {
+        public int Id { get; set; }
+        public string Cliente { get; set; }
+        public DateTime Fecha { get; set; }
+        public override string ToString() => $"{Id}: {Cliente}";
+    }
+}</code></pre>
+            <pre><code>git add .
+git commit -m "feat: agreada clase modelo Cita"</code></pre>
+        </div>
+
+        <div id="paso6" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 6: P2 Crea Repositorio SQL</span>
+                <span class="role-badge role-p2">Ejecuta: P2</span>
+            </div>
+            <p>Simultáneamente, P2 crea su rama <code>feature/repositorio-sql</code>.</p>
+            <pre><code>git checkout -b feature/repositorio-sql</code></pre>
+            <p><strong>Código añadido (CitaRepository.cs):</strong></p>
+            <pre><code>public class CitaRepository {
+    public void Guardar(Cita cita) {
+        Console.WriteLine($"[SQL] Insertando cita de {cita.Cliente}...");
+    }
+}</code></pre>
+            <pre><code>git add .
+git commit -m "feat: estructura inicial de CitaRepository"</code></pre>
+            <div class="alert alert-info">
+                <strong>Nota Pedagógica:</strong> P2 usa la clase <code>Cita</code> en su código, pero P2 aún no la tiene. Para simular, asumimos que espera a P1 para integrar.
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>📅 Fase 3: Integración y Pull Requests</h2>
+
+        <div id="paso7" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 7: P1 Sube Cambios (PR)</span>
+                <span class="role-badge role-p1">Ejecuta: P1</span>
+            </div>
+            <pre><code>git push origin feature/modelo-cita</code></pre>
+            <p>P1 crea Pull Request en GitHub: <em>"Agrega modelo de dominio Cita"</em>.</p>
+        </div>
+
+        <div id="paso8" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 8: Revisión y Merge</span>
+                <span class="role-badge role-cto">Ejecuta: CTO</span>
+            </div>
+            <p>El CTO aprueba y hace <strong>Squash and Merge</strong>. Ahora <code>main</code> tiene <code>Cita.cs</code>.</p>
+        </div>
+
+        <div id="paso9" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 9: P2 Sincroniza su trabajo</span>
+                <span class="role-badge role-p2">Ejecuta: P2</span>
+            </div>
+            <p>P2 necesita lo que hizo P1 para que su código compile.</p>
+            <pre><code># 1. Actualizar main local
+git checkout main
+git pull origin main
+
+# 2. Fusionar en rama de trabajo
+git checkout feature/repositorio-sql
+git merge main
+
+# 3. Subir y PR
+git add .
+git commit -m "refactor: integrado modelo Cita real"
+git push origin feature/repositorio-sql</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2>📅 Fase 4: Conflicto de Fusión 💥</h2>
+        <div class="alert alert-danger">
+            <strong>El escenario del terror:</strong> Ambos programadores editan el mismo archivo (Program.cs) en las mismas líneas.
+        </div>
+
+        <div id="paso10" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 10: P1 Modifica el Main</span>
+                <span class="role-badge role-p1">Ejecuta: P1</span>
+            </div>
+            <p>P1 añade un menú y el CTO lo fusiona rápidamente.</p>
+            <pre><code>git checkout main
+git pull origin main
+git checkout -b feature/interfaz-consola
+
+// Modifica Program.cs
+git commit -am "feat: menu basico de consola"
+git push origin feature/interfaz-consola</code></pre>
+        </div>
+
+        <div id="paso11" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 11: P2 modifica sin actualizar</span>
+                <span class="role-badge role-p2">Ejecuta: P2</span>
+            </div>
+            <p>P2 quiere añadir logs, pero <strong>olvidó hacer pull</strong>.</p>
+            <pre><code>git checkout main
+# ERROR: P2 olvida 'git pull'
+git checkout -b feature/logger-inicio
+
+// Modifica Program.cs (mismas líneas que P1)
+git commit -am "feat: log de inicio al arrancar"</code></pre>
+        </div>
+
+        <div id="paso12" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 12: El Choque (Fetch + Merge)</span>
+                <span class="role-badge role-p2">Ejecuta: P2</span>
+            </div>
+            <p>P2 intenta traerse los cambios antes de subir.</p>
+            <pre><code>git fetch origin
+git merge origin/main</code></pre>
+            <p><strong>Resultado:</strong> <code>CONFLICT (content): Merge conflict in Program.cs</code></p>
+        </div>
+
+        <div id="paso13" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 13: Resolución del Conflicto</span>
+                <span class="role-badge role-p2">Ejecuta: P2</span>
+            </div>
+            <p>P2 abre el editor, ve los marcadores <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> y decide combinar ambos códigos.</p>
+            <pre><code>// Código final arreglado
+Console.WriteLine("*** SISTEMA INICIADO: " + DateTime.Now + " ***");
+Console.WriteLine("=== BIENVENIDO AL TALLER 1.0 ===");
+Console.WriteLine("1. Nueva Cita");</code></pre>
+            <pre><code>git add Program.cs
+git commit -m "fix: resuelto conflicto uniendo logs y menu"
+git push origin feature/logger-inicio</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2>📅 Fase 5: Release</h2>
+        <div id="paso14" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 14: Release v1.0</span>
+                <span class="role-badge role-cto">Ejecuta: CTO</span>
+            </div>
+            <pre><code>git tag -a v1.0 -m "Release v1.0: Gestion de citas funcional"
+git push origin v1.0</code></pre>
+        </div>
+    </section>
+
+    <section id="resumen">
+        <h2>🎓 Cronograma Resumido de Comandos</h2>
+        <div class="step">
+            <h3>CTO (Setup)</h3>
+            <pre><code>dotnet new gitignore
+git init
+git add .
+git commit -m "initial commit"
+git branch -M main
+git remote add origin &lt;URL&gt;
+git push -u origin main</code></pre>
+
+            <h3>P1 (Feature 1)</h3>
+            <pre><code>git clone &lt;URL&gt;
+git checkout -b feature/modelo-cita
+git add .
+git commit -m "feat: modelo cita"
+git push origin feature/modelo-cita</code></pre>
+
+            <h3>P2 (Sincronización)</h3>
+            <pre><code>git checkout main
+git pull origin main
+git checkout feature/repositorio-sql
+git merge main
+git push origin feature/repositorio-sql</code></pre>
+
+            <h3>P2 (Resolución Conflicto)</h3>
+            <pre><code>git fetch origin
+git merge origin/main</code></pre>
+            
+            <div class="alert alert-warning">
+                <strong>💡 Nota Técnica:</strong> Utiliza <code>fetch</code> y luego <code>merge</code> en lugar de <code>pull</code> para evitar hacer un pull (que es fetch+merge) a la vez. Si falla un pull directo, es difícil saber si falló la descarga o la fusión. Al separarlos, controlas mejor cuándo ocurre el conflicto.
+            </div>
+
+            <pre><code># Tras editar el archivo manualmente:
+git add &lt;archivo&gt;
+git commit -m "fix: merge conflict"
+git push origin &lt;rama&gt;</code></pre>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>Consejo Final:</strong> Como principiante, tu mayor miedo serán los conflictos. No tengas miedo. Un conflicto es solo Git pidiéndote ayuda porque eres más inteligente que él.
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>Simulación de Git & GitHub - Generado para propósitos educativos</p>
+</footer>
+
+<script>
+    function toggleMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    // Close menu when clicking a link on mobile
+    document.querySelectorAll('.sidebar a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                toggleMenu();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
