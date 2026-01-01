@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tech Guides | Índice</title>
+    
+    <style>
+        /* CSS Reset Básico para consistencia */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Variables CSS para facilitar cambios futuros */
+        :root {
+            --primary-color: #007bff; /* Azul profesional */
+            --primary-hover: #0056b3;
+            --background-color: #f4f7f6; /* Fondo gris muy claro */
+            --card-background: #ffffff; /* Fondo de tarjeta blanco */
+            --text-color: #333;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo general del cuerpo */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Contenedor principal para centrar y limitar el ancho */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Título de la página */
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        /* Lista de guías (la tabla de contenido) */
+        .guide-list {
+            list-style: none; /* Eliminar viñetas */
+            padding: 0;
+            display: grid;
+            gap: 20px;
+            /* Diseño de cuadrícula adaptable para pantallas grandes */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        /* Estilo de cada elemento de la lista (el contenedor del botón/tarjeta) */
+        .guide-list li {
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Efecto hover sutil para la interacción */
+        .guide-list li:hover {
+            transform: translateY(-5px); /* Pequeño levantamiento */
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* El enlace (que actúa como botón grande) */
+        .guide-link {
+            display: block;
+            width: 100%;
+            padding: 25px 30px;
+            background-color: var(--card-background);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            text-align: left;
+            border: 1px solid #e0e0e0; /* Borde sutil */
+        }
+
+        /* Efecto hover en el enlace */
+        .guide-link:hover {
+            background-color: var(--primary-color);
+            color: var(--card-background); /* Texto blanco sobre fondo azul */
+            border-color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Guías y Recursos Técnicos</h1>
+
+        <ul class="guide-list">
+            <li>
+                <a href="C%23%20Guide.html" class="guide-link">
+                    C# Guide: Introducción y Fundamentos
+                </a>
+            </li>
+            <li>
+                <a href="https://docs.google.com/spreadsheets/d/1EbJROfgn9v4vWoLfqhMMgrPnptqxFSt5MSrtRWIQrOg/edit?gid=1499996445#gid=1499996445" class="guide-link">
+                    AI & Data Courses
+                </a>
+            </li>
+
+            
+            </ul>
+    </div>
+</body>
+</html>
