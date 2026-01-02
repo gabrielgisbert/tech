@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conceptos de IA Agéntica</title>
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --card-bg: #181b21;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --accent: #4ade80; /* Verde Agéntico */
+            --accent-hover: #22c55e;
+            --border: #2d3748;
+            --example-bg: #1c2e24;
+            --example-border: #2f855a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 100px; /* Espacio para el botón flotante */
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(180deg, rgba(74, 222, 128, 0.05) 0%, rgba(15, 17, 21, 0) 100%);
+            padding: 3rem 1rem 4rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 span {
+            color: var(--accent);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+        }
+
+        /* Imagen Principal */
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(74, 222, 128, 0.15); /* Resplandor verde suave */
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+            max-height: 600px; /* Limite de altura para pantallas grandes */
+            object-fit: contain;
+        }
+
+        /* Contenedor Principal */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Secciones (Capas) */
+        .layer-section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .layer-title {
+            font-size: 2rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .layer-desc {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Tarjetas de Conceptos */
+        .concept-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--accent);
+            opacity: 0.5;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-color: var(--accent);
+        }
+
+        .concept-card:hover::before {
+            opacity: 1;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+
+        /* Bloque de Ejemplo */
+        .example-box {
+            background-color: var(--example-bg);
+            border-left: 3px solid var(--example-border);
+            padding: 1rem;
+            border-radius: 0 6px 6px 0;
+            margin-top: 1rem;
+        }
+
+        .example-label {
+            display: block;
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.05em;
+        }
+
+        .example-text {
+            font-size: 0.95rem;
+            color: #ecfdf5;
+            margin-bottom: 0;
+        }
+
+        /* Botón Flotante y Navegación */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            background-color: var(--accent-hover);
+        }
+
+        .fab i {
+            transition: transform 0.3s;
+        }
+
+        .fab.active i {
+            transform: rotate(45deg);
+        }
+
+        /* Menú de Navegación */
+        .nav-menu {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 320px;
+            max-height: 70vh;
+            overflow-y: auto;
+            background-color: rgba(24, 27, 33, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transform-origin: bottom right;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.3s ease;
+            visibility: hidden;
+        }
+
+        .nav-menu.open {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-title {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-category {
+            margin-bottom: 1rem;
+        }
+
+        .nav-category-title {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .nav-sub-list {
+            list-style: none;
+            padding-left: 10px;
+            border-left: 1px solid var(--border);
+        }
+
+        .nav-item {
+            padding: 4px 0 4px 10px;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a5568;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .container { padding: 1rem; }
+            .fab-container { bottom: 20px; right: 20px; }
+            .nav-menu { width: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Agentic <span>AI</span></h1>
+            <p class="subtitle">Guía estructurada desde los LLMs hasta la Infraestructura Agéntica</p>
+            
+            <img src="images/iaconcepts.jpg" alt="Esquema Visual Agentic AI Concepts" class="hero-image">
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section id="capa-1" class="layer-section" style="animation-delay: 0.1s;">
+            <h2 class="layer-title">Capa 1: LLMs</h2>
+            <p class="layer-desc">El núcleo cognitivo. Aquí reside la capacidad de procesamiento del lenguaje y el conocimiento base.</p>
+
+            <div class="concept-card" id="c1-1">
+                <h3>1. Tokenization & Inference Parameters</h3>
+                <p>Este es el proceso fundamental de traducción. La tokenización convierte el texto humano en unidades numéricas que el modelo puede procesar. Los parámetros de inferencia controlan la aleatoriedad y creatividad de la respuesta. No es solo "leer", es cómo la máquina decide probabilísticamente cuál es la siguiente pieza de información.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Ajustar la "temperatura" a 0.2 para que un modelo redacte un contrato legal (precisión), frente a subirla a 0.9 para escribir un poema creativo (variedad).</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c1-2">
+                <h3>2. RAG (Retrieval-Augmented Generation)</h3>
+                <p>Soluciona la limitación de conocimiento estático de los LLMs. El sistema busca datos frescos en una base de datos externa y se los entrega al modelo como contexto antes de generar respuesta. Reduce las alucinaciones y permite usar datos privados sin reentrenar.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un chatbot que, antes de responderte, consulta el manual en PDF más reciente de tu lavadora y usa esa información exacta para decirte cómo limpiar el filtro.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c1-3">
+                <h3>3. Fine-tuning & Adaptation</h3>
+                <p>Proceso de especialización. Se toma un modelo generalista y se entrena adicionalmente con datos de un dominio específico. Esto altera los pesos de la red neuronal para que el modelo adopte un estilo o conocimiento muy profundo sobre un tema concreto.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un hospital entrena un modelo base exclusivamente con historiales clínicos anonimizados para crear un asistente que entiende jerga médica compleja.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c1-4">
+                <h3>4. Prompt Engineering</h3>
+                <p>El arte de diseñar instrucciones de entrada para guiar al modelo. Implica técnicas como few-shot prompting y estructuración lógica para manipular el espacio latente del modelo y obtener resultados de alta calidad sin tocar el código.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Usar un prompt estructurado: "Actúa como experto B2B, usa el marco AIDA, dirígete a CTOs y mantén un tono disruptivo".</p>
+                </div>
+            </div>
+
+             <div class="concept-card" id="c1-5">
+                <h3>5. Context Engineering</h3>
+                <p>Gestión óptima de la "ventana de contexto". Implica seleccionar, comprimir y priorizar qué información se da al modelo para que no olvide datos críticos en interacciones largas, dado su límite de memoria a corto plazo.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un sistema resume automáticamente las decisiones tomadas en los primeros 30 minutos de una reunión y las reinyecta en el prompt actual para mantener la coherencia.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="capa-2" class="layer-section" style="animation-delay: 0.2s;">
+            <h2 class="layer-title">Capa 2: AI Agents</h2>
+            <p class="layer-desc">El individuo autónomo. Aquí el LLM gana la capacidad de actuar, recordar y razonar.</p>
+
+            <div class="concept-card" id="c2-1">
+                <h3>1. Agent Reasoning (ReAct, CoT, ToT)</h3>
+                <p>Metodologías para que el agente "piense" antes de actuar. Chain-of-Thought fuerza a explicar la lógica paso a paso. ReAct combina razonamiento con acciones. Tree of Thoughts explora múltiples posibilidades antes de decidir.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Ante una pregunta compleja, el agente: 1. Busca el dato A. 2. Busca el dato B. 3. Realiza la operación matemática entre ambos. Razona cada paso.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c2-2">
+                <h3>2. Long-term Memory</h3>
+                <p>Permite recordar interacciones pasadas o hechos aprendidos hace tiempo mediante bases de datos vectoriales. Diferencia a un agente de un chat que se resetea; le da continuidad e identidad.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un tutor de IA recuerda que la semana pasada fallaste en verbos irregulares y hoy empieza la lección proponiendo un repaso específico.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c2-3">
+                <h3>3. State Management</h3>
+                <p>Capacidad de saber "dónde está" dentro de un proceso. Mantiene el seguimiento de variables y pasos completados. Evita bucles infinitos y permite retomar tareas si hay interrupciones.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un agente de viajes sabe que el vuelo ya está reservado y que el estado actual es "pendiente de coche", respondiendo con precisión sobre lo que falta.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c2-4">
+                <h3>4. Multi-Step Tool Chaining</h3>
+                <p>Habilidad de usar varias herramientas de software secuencialmente. El agente entiende que la salida de la Herramienta A es la entrada de la Herramienta B para resolver problemas complejos.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">1. Usa SQL para sacar datos. 2. Usa Python para graficarlos. 3. Usa API de Gmail para enviar el gráfico.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c2-5">
+                <h3>5. Safe Interruptibility</h3>
+                <p>Mecanismos que permiten detener a un agente en mitad de una tarea sin corromper datos. Vital para agentes autónomos que realizan acciones reales para evitar consecuencias graves.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un humano pulsa "stop" mientras el agente compra acciones. El agente detiene las compras nuevas pero cierra limpiamente las pendientes.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="capa-3" class="layer-section" style="animation-delay: 0.3s;">
+            <h2 class="layer-title">Capa 3: Agentic Systems</h2>
+            <p class="layer-desc">La orquestación. Múltiples agentes colaborando para resolver problemas complejos.</p>
+
+            <div class="concept-card" id="c3-1">
+                <h3>1. Task Planning & Decomposition</h3>
+                <p>Capacidad de tomar un objetivo enorme y romperlo en subtareas lógicas y ordenadas, entendiendo las dependencias entre ellas (no puedes pintar la pared si no la has construido).</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">"Organiza conferencia": 1. Agente búsqueda busca local. 2. Agente financiero calcula presupuesto. 3. Agente diseño hace invitaciones.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c3-2">
+                <h3>2. Multi-Agent RAG & Knowledge Sharing</h3>
+                <p>Varios agentes especializados acceden a diferentes bases de conocimiento pero comparten hallazgos clave, evitando silos de información y nutriendo un contexto compartido.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">El agente de aerodinámica consulta física y comparte el resultado con el agente de diseño estético para ajustar el modelo 3D.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c3-3">
+                <h3>3. Messaging Protocols</h3>
+                <p>Estándar técnico (JSON, etc.) para que los agentes se envíen información estructurada. Asegura que el Agente A entienda exactamente lo que el Agente B envía.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Uso de cabeceras estandarizadas de "remitente", "intención" y "payload" para que agentes en distintos lenguajes se entiendan.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c3-4">
+                <h3>4. Inter-Agent Communication</h3>
+                <p>Dinámica de conversación entre agentes (negociación, corrección, votación). Permite la revisión por pares automática antes de entregar el resultado al humano.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Agente "Desarrollador" escribe código. Agente "Tester" encuentra error y lo comunica. Desarrollador arregla. Bucle autónomo.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c3-5">
+                <h3>5. Hierarchical Planning</h3>
+                <p>Estructura con agentes "Jefes" (Managers) y "Trabajadores". El jefe supervisa y asigna recursos sin ejecutar tareas, esencial para escalar la complejidad.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Agente CEO asigna interfaz a Agente Diseño y base de datos a Agente Backend. Resuelve conflictos si surgen.</p>
+                </div>
+            </div>
+            
+            <div class="concept-card" id="c3-6">
+                <h3>6. Routing, Scheduling & Coordination</h3>
+                <p>El tráfico aéreo del sistema. Decide qué agente es mejor para cada tarea, cuándo ejecutarla y cómo sincronizar resultados para optimizar recursos.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">El sistema detecta una consulta técnica y la enruta al Agente de Soporte (no a Ventas), dándole prioridad alta.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c3-7">
+                <h3>7. Fail-Safe Design</h3>
+                <p>Arquitectura que asume fallos. Detecta bucles o bloqueos y revierte a un estado seguro o pide ayuda humana. Evita que un error tumbe todo el sistema.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Si la reserva de vuelo falla 3 veces, el sistema para y alerta: "Se requiere acción manual", en lugar de seguir intentándolo infinitamente.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c3-8">
+                <h3>8. Emergent Behavior Analysis</h3>
+                <p>Monitoreo de dinámicas imprevistas creadas por la interacción de múltiples agentes. Detecta y controla comportamientos no programados para mantener la alineación.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Agentes económicos empiezan a especular inflando precios. El sistema detecta la burbuja y ajusta parámetros para estabilizar.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="capa-4" class="layer-section" style="animation-delay: 0.4s;">
+            <h2 class="layer-title">Capa 4: Agentic Infra</h2>
+            <p class="layer-desc">El soporte vital. La plataforma de ingeniería, seguridad y ética donde viven los agentes.</p>
+
+            <div class="concept-card" id="c4-1">
+                <h3>1. Observability, Monitoring & Logging</h3>
+                <p>Herramientas para ver "dentro del cerebro" del sistema. Registra trazas completas de decisiones y costes para depurar errores y entender el comportamiento.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un dashboard donde ves paso a paso cómo el agente viajó desde la pregunta hasta la respuesta, tiempos y costes.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c4-2">
+                <h3>2. Security, Privacy & Access Control</h3>
+                <p>Protege datos y define permisos (RBAC). Asegura que la información sensible no se filtre a usuarios no autorizados o modelos públicos.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">El agente de código intenta leer nóminas. El sistema de control de acceso bloquea la petición por falta de permisos.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c4-3">
+                <h3>3. Resource Scaling</h3>
+                <p>Infraestructura elástica para soportar miles de agentes. Gestiona GPUs y memoria, escalando horizontal o verticalmente según la demanda.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">En Black Friday, el sistema multiplica instancias de agentes de 50 a 5000 automáticamente y luego reduce al bajar demanda.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c4-4">
+                <h3>4. Compliance & Governance</h3>
+                <p>Asegura cumplimiento legal (GDPR, AI Act). Incluye auditorías y límites geográficos de datos para evitar problemas legales corporativos.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Sistema que detecta solicitud de "derecho al olvido" y ordena borrar toda memoria relacionada con ese usuario.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c4-5">
+                <h3>5. Fairness, Bias & Ethical Controls</h3>
+                <p>Filtros que analizan salidas para detectar discriminación o sesgos antes de llegar al usuario, alineando la IA con valores humanos.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Un módulo ético escanea la selección de candidatos de RRHH para asegurar que no descarta perfiles por género o etnia.</p>
+                </div>
+            </div>
+
+            <div class="concept-card" id="c4-6">
+                <h3>6. Error Handling, Retries & Resilience</h3>
+                <p>Capacidad de absorber fallos técnicos. Incluye lógica de reintentos y cambio a proveedores de respaldo para garantizar continuidad.</p>
+                <div class="example-box">
+                    <span class="example-label">Ejemplo:</span>
+                    <p class="example-text">Falla la API de clima. El sistema espera, reintenta. Falla de nuevo. Cambia automáticamente a un proveedor secundario.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="fab-container">
+        <div class="nav-menu" id="nav-menu">
+            <div class="nav-title">Índice de Contenidos</div>
+            <ul class="nav-list">
+                <li class="nav-category">
+                    <a href="#capa-1" class="nav-category-title">1. LLMs</a>
+                    <ul class="nav-sub-list">
+                        <li class="nav-item"><a href="#c1-1" class="nav-link">Tokenization & Inference</a></li>
+                        <li class="nav-item"><a href="#c1-2" class="nav-link">RAG</a></li>
+                        <li class="nav-item"><a href="#c1-3" class="nav-link">Fine-tuning</a></li>
+                        <li class="nav-item"><a href="#c1-4" class="nav-link">Prompt Engineering</a></li>
+                        <li class="nav-item"><a href="#c1-5" class="nav-link">Context Engineering</a></li>
+                    </ul>
+                </li>
+                <li class="nav-category">
+                    <a href="#capa-2" class="nav-category-title">2. AI Agents</a>
+                    <ul class="nav-sub-list">
+                        <li class="nav-item"><a href="#c2-1" class="nav-link">Agent Reasoning</a></li>
+                        <li class="nav-item"><a href="#c2-2" class="nav-link">Long-term Memory</a></li>
+                        <li class="nav-item"><a href="#c2-3" class="nav-link">State Management</a></li>
+                        <li class="nav-item"><a href="#c2-4" class="nav-link">Tool Chaining</a></li>
+                        <li class="nav-item"><a href="#c2-5" class="nav-link">Safe Interruptibility</a></li>
+                    </ul>
+                </li>
+                <li class="nav-category">
+                    <a href="#capa-3" class="nav-category-title">3. Agentic Systems</a>
+                    <ul class="nav-sub-list">
+                        <li class="nav-item"><a href="#c3-1" class="nav-link">Task Planning</a></li>
+                        <li class="nav-item"><a href="#c3-2" class="nav-link">Multi-Agent RAG</a></li>
+                        <li class="nav-item"><a href="#c3-3" class="nav-link">Messaging Protocols</a></li>
+                        <li class="nav-item"><a href="#c3-4" class="nav-link">Inter-Agent Comm</a></li>
+                        <li class="nav-item"><a href="#c3-5" class="nav-link">Hierarchical Planning</a></li>
+                        <li class="nav-item"><a href="#c3-6" class="nav-link">Routing & Coord</a></li>
+                        <li class="nav-item"><a href="#c3-7" class="nav-link">Fail-Safe Design</a></li>
+                        <li class="nav-item"><a href="#c3-8" class="nav-link">Emergent Behavior</a></li>
+                    </ul>
+                </li>
+                <li class="nav-category">
+                    <a href="#capa-4" class="nav-category-title">4. Agentic Infra</a>
+                    <ul class="nav-sub-list">
+                        <li class="nav-item"><a href="#c4-1" class="nav-link">Observability</a></li>
+                        <li class="nav-item"><a href="#c4-2" class="nav-link">Security & Privacy</a></li>
+                        <li class="nav-item"><a href="#c4-3" class="nav-link">Resource Scaling</a></li>
+                        <li class="nav-item"><a href="#c4-4" class="nav-link">Compliance</a></li>
+                        <li class="nav-item"><a href="#c4-5" class="nav-link">Fairness & Bias</a></li>
+                        <li class="nav-item"><a href="#c4-6" class="nav-link">Error Handling</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <button class="fab" id="fab-btn" onclick="toggleMenu()">
+            <i>☰</i>
+        </button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            const btn = document.getElementById('fab-btn');
+            const icon = btn.querySelector('i');
+            
+            menu.classList.toggle('open');
+            btn.classList.toggle('active');
+            
+            if (menu.classList.contains('open')) {
+                icon.textContent = '✕';
+            } else {
+                icon.textContent = '☰';
+            }
+        }
+
+        // Cerrar menú al hacer clic en un enlace (para móviles)
+        document.querySelectorAll('.nav-link, .nav-category-title').forEach(link => {
+            link.addEventListener('click', () => {
+                if(window.innerWidth < 768) {
+                    toggleMenu();
+                }
+            });
+        });
+
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('nav-menu');
+            const btn = document.getElementById('fab-btn');
+            
+            if (menu.classList.contains('open') && 
+                !menu.contains(e.target) && 
+                !btn.contains(e.target)) {
+                toggleMenu();
+            }
+        });
+    </script>
+</body>
+</html>
