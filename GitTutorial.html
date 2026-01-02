@@ -32,7 +32,7 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.6;
-            padding-top: 60px;
+            padding-top: 60px; /* Space for fixed header */
         }
 
         /* Header & Nav */
@@ -47,7 +47,7 @@
             display: flex;
             align-items: center;
             padding: 0 20px;
-            z-index: 1100; /* Por encima del sidebar */
+            z-index: 1000;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
@@ -76,29 +76,27 @@
             font-weight: 700;
             font-size: 1.1rem;
             color: var(--primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         /* Sidebar Navigation */
         .sidebar {
             position: fixed;
             top: 60px;
-            left: -320px; /* Escondido por completo */
+            /* CORRECCIÓN AQUI: Usamos -100% para ocultarlo totalmente sea cual sea su ancho */
+            left: -100%; 
             width: 300px;
             height: calc(100vh - 60px);
             background: var(--bg-card);
             border-right: 1px solid var(--border);
             overflow-y: auto;
-            transition: left 0.3s ease-in-out;
-            z-index: 1050;
+            transition: left 0.3s ease;
+            z-index: 999;
             padding: 20px;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
         }
 
         .sidebar.active {
-            left: 0; /* Aparece solo cuando se activa */
+            left: 0;
         }
 
         .sidebar ul {
@@ -129,26 +127,11 @@
             font-size: 0.85rem;
         }
 
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 100%;
-            height: calc(100vh - 60px);
-            background: rgba(0,0,0,0.5);
-            display: none;
-            z-index: 1000;
-            backdrop-filter: blur(2px);
-        }
-        .overlay.active { display: block; }
-
         /* Main Content */
         main {
             max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
-            transition: opacity 0.3s;
         }
 
         h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #0f172a; line-height: 1.2; }
@@ -225,21 +208,71 @@
             border-left: 4px solid var(--primary);
         }
 
-        code { font-family: 'Consolas', 'Monaco', monospace; }
-        p > code { background: #e2e8f0; color: #d63384; padding: 2px 5px; border-radius: 4px; font-size: 0.9em; }
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        p > code {
+            background: #e2e8f0;
+            color: #d63384;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
 
-        /* Alerts */
-        .alert { padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 5px solid; }
-        .alert-warning { background-color: #fffbeb; border-color: #f59e0b; color: #92400e; }
-        .alert-info { background-color: #eff6ff; border-color: #3b82f6; color: #1e40af; }
-        .alert-danger { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; }
+        /* Alerts & Notes */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
 
-        footer { text-align: center; margin-top: 60px; padding: 40px; background: var(--bg-card); border-top: 1px solid var(--border); color: var(--text-muted); }
+        .alert-warning {
+            background-color: #fffbeb;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .alert-danger {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        /* Overlay for mobile when menu is open */
+        .overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 60px);
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 998;
+        }
+        .overlay.active { display: block; }
 
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             .sidebar { width: 85%; }
-            .header-title { font-size: 0.9rem; }
+            /* Al tener left: -100% en la clase base, aquí ya no solapa nada */
         }
     </style>
 </head>
@@ -262,21 +295,26 @@
         <li><a href="#paso1" class="sub-link" onclick="toggleMenu()">1. Setup & Gitignore</a></li>
         <li><a href="#paso2" class="sub-link" onclick="toggleMenu()">2. Git Init & Commit</a></li>
         <li><a href="#paso3" class="sub-link" onclick="toggleMenu()">3. Conexión Remota</a></li>
+        
         <li><strong>Fase 2: Desarrollo Paralelo</strong></li>
         <li><a href="#paso4" class="sub-link" onclick="toggleMenu()">4. Clonado (Onboarding)</a></li>
         <li><a href="#paso5" class="sub-link" onclick="toggleMenu()">5. P1: Modelo Datos</a></li>
         <li><a href="#paso6" class="sub-link" onclick="toggleMenu()">6. P2: Repo SQL</a></li>
+        
         <li><strong>Fase 3: Integración</strong></li>
         <li><a href="#paso7" class="sub-link" onclick="toggleMenu()">7. P1: Pull Request</a></li>
         <li><a href="#paso8" class="sub-link" onclick="toggleMenu()">8. CTO: Merge</a></li>
         <li><a href="#paso9" class="sub-link" onclick="toggleMenu()">9. P2: Sincronización</a></li>
+        
         <li><strong>Fase 4: Conflicto</strong></li>
         <li><a href="#paso10" class="sub-link" onclick="toggleMenu()">10. P1 Modifica Main</a></li>
         <li><a href="#paso11" class="sub-link" onclick="toggleMenu()">11. P2 Crea Error</a></li>
         <li><a href="#paso12" class="sub-link" onclick="toggleMenu()">12. El Choque (Fetch/Merge)</a></li>
         <li><a href="#paso13" class="sub-link" onclick="toggleMenu()">13. Resolución</a></li>
+        
         <li><strong>Fase 5: Release</strong></li>
         <li><a href="#paso14" class="sub-link" onclick="toggleMenu()">14. Etiquetado v1.0</a></li>
+        
         <li><a href="#resumen" onclick="toggleMenu()"><strong>🎓 Cronograma Resumido</strong></a></li>
     </ul>
 </nav>
@@ -311,6 +349,7 @@
 
     <section>
         <h2>📅 Fase 1: Inicialización del Proyecto</h2>
+
         <div id="paso1" class="step">
             <div class="step-header">
                 <span class="step-title">Paso 1: Creación del Proyecto y .gitignore</span>
@@ -353,6 +392,8 @@ git push -u origin main</code></pre>
 
     <section>
         <h2>📅 Fase 2: Desarrollo Paralelo</h2>
+        <p>El equipo P1 y P2 clona el repositorio y trabaja simultáneamente.</p>
+
         <div id="paso4" class="step">
             <div class="step-header">
                 <span class="step-title">Paso 4: Onboarding (Clonado)</span>
@@ -397,11 +438,15 @@ git commit -m "feat: agreada clase modelo Cita"</code></pre>
 }</code></pre>
             <pre><code>git add .
 git commit -m "feat: estructura inicial de CitaRepository"</code></pre>
+            <div class="alert alert-info">
+                <strong>Nota Pedagógica:</strong> P2 usa la clase <code>Cita</code> en su código, pero P2 aún no la tiene. Para simular, asumimos que espera a P1 para integrar.
+            </div>
         </div>
     </section>
 
     <section>
         <h2>📅 Fase 3: Integración y Pull Requests</h2>
+
         <div id="paso7" class="step">
             <div class="step-header">
                 <span class="step-title">Paso 7: P1 Sube Cambios (PR)</span>
@@ -425,10 +470,15 @@ git commit -m "feat: estructura inicial de CitaRepository"</code></pre>
                 <span class="role-badge role-p2">Ejecuta: P2</span>
             </div>
             <p>P2 necesita lo que hizo P1 para que su código compile.</p>
-            <pre><code>git checkout main
+            <pre><code># 1. Actualizar main local
+git checkout main
 git pull origin main
+
+# 2. Fusionar en rama de trabajo
 git checkout feature/repositorio-sql
 git merge main
+
+# 3. Subir y PR
 git add .
 git commit -m "refactor: integrado modelo Cita real"
 git push origin feature/repositorio-sql</code></pre>
@@ -450,9 +500,24 @@ git push origin feature/repositorio-sql</code></pre>
             <pre><code>git checkout main
 git pull origin main
 git checkout -b feature/interfaz-consola
+
 // Modifica Program.cs
 git commit -am "feat: menu basico de consola"
 git push origin feature/interfaz-consola</code></pre>
+        </div>
+
+        <div id="paso11" class="step">
+            <div class="step-header">
+                <span class="step-title">Paso 11: P2 modifica sin actualizar</span>
+                <span class="role-badge role-p2">Ejecuta: P2</span>
+            </div>
+            <p>P2 quiere añadir logs, pero <strong>olvidó hacer pull</strong>.</p>
+            <pre><code>git checkout main
+# ERROR: P2 olvida 'git pull'
+git checkout -b feature/logger-inicio
+
+// Modifica Program.cs (mismas líneas que P1)
+git commit -am "feat: log de inicio al arrancar"</code></pre>
         </div>
 
         <div id="paso12" class="step">
@@ -472,6 +537,10 @@ git merge origin/main</code></pre>
                 <span class="role-badge role-p2">Ejecuta: P2</span>
             </div>
             <p>P2 abre el editor, ve los marcadores <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> y decide combinar ambos códigos.</p>
+            <pre><code>// Código final arreglado
+Console.WriteLine("*** SISTEMA INICIADO: " + DateTime.Now + " ***");
+Console.WriteLine("=== BIENVENIDO AL TALLER 1.0 ===");
+Console.WriteLine("1. Nueva Cita");</code></pre>
             <pre><code>git add Program.cs
 git commit -m "fix: resuelto conflicto uniendo logs y menu"
 git push origin feature/logger-inicio</code></pre>
@@ -498,10 +567,13 @@ git push origin v1.0</code></pre>
 git init
 git add .
 git commit -m "initial commit"
+git branch -M main
+git remote add origin &lt;URL&gt;
 git push -u origin main</code></pre>
 
             <h3>P1 (Feature 1)</h3>
-            <pre><code>git checkout -b feature/modelo-cita
+            <pre><code>git clone &lt;URL&gt;
+git checkout -b feature/modelo-cita
 git add .
 git commit -m "feat: modelo cita"
 git push origin feature/modelo-cita</code></pre>
@@ -510,9 +582,28 @@ git push origin feature/modelo-cita</code></pre>
             <pre><code>git checkout main
 git pull origin main
 git checkout feature/repositorio-sql
-git merge main</code></pre>
+git merge main
+git push origin feature/repositorio-sql</code></pre>
+
+            <h3>P2 (Resolución Conflicto)</h3>
+            <pre><code>git fetch origin
+git merge origin/main</code></pre>
+            
+            <div class="alert alert-warning">
+                <strong>💡 Nota Técnica:</strong> Utiliza <code>fetch</code> y luego <code>merge</code> en lugar de <code>pull</code> para evitar hacer un pull (que es fetch+merge) a la vez. Si falla un pull directo, es difícil saber si falló la descarga o la fusión. Al separarlos, controlas mejor cuándo ocurre el conflicto.
+            </div>
+
+            <pre><code># Tras editar el archivo manualmente:
+git add &lt;archivo&gt;
+git commit -m "fix: merge conflict"
+git push origin &lt;rama&gt;</code></pre>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>Consejo Final:</strong> Como principiante, tu mayor miedo serán los conflictos. No tengas miedo. Un conflicto es solo Git pidiéndote ayuda porque eres más inteligente que él.
         </div>
     </section>
+
 </main>
 
 <footer>
@@ -527,7 +618,7 @@ git merge main</code></pre>
         overlay.classList.toggle('active');
     }
 
-    // Cerrar al hacer clic en un enlace (importante para móviles)
+    // Close menu when clicking a link on mobile
     document.querySelectorAll('.sidebar a').forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth <= 768) {
