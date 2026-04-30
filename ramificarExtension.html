@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ramificar — Bifurca cualquier conversación con IA sin perder el hilo</title>
+<meta name="description" content="Extensión gratuita para Chrome. Selecciona, ramifica y continúa. Funciona con ChatGPT, Claude, Gemini, Grok y DeepSeek." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #1a1a1a;
+    --ink-soft:   #2c2a26;
+    --paper:      #f4ede0;
+    --paper-warm: #ebe1cf;
+    --paper-deep: #e0d3ba;
+    --branch:     #2d5e3e;
+    --branch-deep:#1f4029;
+    --accent:     #c64a1e;
+    --accent-soft:#e87a4d;
+    --rule:       rgba(26,26,26,0.12);
+    --rule-strong:rgba(26,26,26,0.35);
+
+    --display: "Fraunces", "Times New Roman", serif;
+    --body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: "JetBrains Mono", "Courier New", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--body);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse 1200px 600px at 80% -10%, rgba(45, 94, 62, 0.08), transparent 60%),
+      radial-gradient(ellipse 800px 500px at 0% 30%, rgba(198, 74, 30, 0.06), transparent 60%);
+  }
+
+  /* Grain texture overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ============= NAVBAR ============= */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(244, 237, 224, 0.82);
+    border-bottom: 1px solid var(--rule);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    font-variation-settings: "SOFT" 30, "WONK" 1;
+  }
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    color: var(--branch);
+  }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nav-links a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a.nav-cta {
+    background: var(--ink);
+    color: var(--paper) !important;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-links a.nav-cta:hover {
+    background: var(--branch);
+    color: var(--paper) !important;
+    transform: translateY(-1px);
+  }
+
+  /* ============= HERO ============= */
+  .hero {
+    padding: 100px 0 120px;
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--branch);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .eyebrow::before {
+    content: "";
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--branch);
+  }
+  h1.headline {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    margin-bottom: 32px;
+    font-variation-settings: "SOFT" 50, "WONK" 1, "opsz" 144;
+  }
+  h1.headline em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 300;
+    font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+  }
+  h1.headline .branch-word {
+    position: relative;
+    display: inline-block;
+  }
+  h1.headline .branch-word::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0.08em;
+    height: 0.18em;
+    background: var(--branch);
+    opacity: 0.25;
+    z-index: -1;
+  }
+  .lede {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin-bottom: 40px;
+  }
+  .hero-cta-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 18px 32px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.25s;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: var(--branch);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(45, 94, 62, 0.3);
+  }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    border-bottom: 1px solid var(--rule-strong);
+    padding-bottom: 4px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .meta-row {
+    margin-top: 36px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .meta-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--branch);
+  }
+
+  /* Hero illustration */
+  .hero-visual {
+    position: relative;
+    aspect-ratio: 1;
+    max-width: 480px;
+    margin-left: auto;
+  }
+  .hero-visual svg {
+    width: 100%;
+    height: 100%;
+  }
+  .branch-line {
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+    animation: drawBranch 2.5s ease-out forwards;
+  }
+  .branch-line.delay-1 { animation-delay: 0.3s; }
+  .branch-line.delay-2 { animation-delay: 0.6s; }
+  .branch-line.delay-3 { animation-delay: 0.9s; }
+  .node-circle {
+    opacity: 0;
+    animation: popIn 0.6s ease-out forwards;
+  }
+  .node-circle.n1 { animation-delay: 0.4s; }
+  .node-circle.n2 { animation-delay: 0.7s; }
+  .node-circle.n3 { animation-delay: 1s; }
+  .node-circle.n4 { animation-delay: 1.3s; }
+  .node-circle.n5 { animation-delay: 1.6s; }
+
+  @keyframes drawBranch {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* ============= LOGOS BAR ============= */
+  .compatible {
+    padding: 50px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper-warm);
+  }
+  .compatible-inner {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .compatible-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+  }
+  .ai-list {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .ai-name {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    font-variation-settings: "WONK" 1;
+    transition: color 0.3s, transform 0.3s;
+  }
+  .ai-name:hover {
+    color: var(--accent);
+    transform: rotate(-2deg);
+  }
+
+  /* ============= SECTION BASE ============= */
+  section {
+    padding: 130px 0;
+    position: relative;
+  }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-eyebrow .num {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+  }
+  h2.section-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(40px, 5.5vw, 68px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 32px;
+    max-width: 900px;
+    font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 144;
+  }
+  h2.section-title em {
+    font-style: italic;
+    color: var(--branch);
+    font-weight: 300;
+  }
+  .section-lede {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 620px;
+    line-height: 1.6;
+  }
+
+  /* ============= PROBLEM SECTION ============= */
+  .problem {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 140px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .problem::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(198, 74, 30, 0.15), transparent 70%);
+    pointer-events: none;
+  }
+  .problem .section-eyebrow { color: var(--accent-soft); }
+  .problem .section-eyebrow .num { color: rgba(244,237,224,0.5); }
+  .problem h2.section-title { color: var(--paper); }
+  .problem h2.section-title em { color: var(--accent-soft); }
+  .problem .section-lede { color: rgba(244,237,224,0.75); }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 80px;
+    margin-top: 70px;
+    align-items: start;
+  }
+  .scenario {
+    border-left: 2px solid rgba(244,237,224,0.2);
+    padding-left: 32px;
+    position: relative;
+  }
+  .scenario .step {
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .scenario .step::before {
+    content: "";
+    position: absolute;
+    left: -38px;
+    top: 8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--paper);
+  }
+  .scenario .step.bad::before { background: var(--accent); }
+  .scenario .step-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(244,237,224,0.5);
+    margin-bottom: 6px;
+  }
+  .scenario .step-text {
+    font-size: 17px;
+    color: var(--paper);
+    line-height: 1.5;
+  }
+
+  .insight {
+    padding: 40px 36px;
+    background: rgba(244,237,224,0.05);
+    border: 1px solid rgba(244,237,224,0.1);
+    border-radius: 4px;
+    position: relative;
+  }
+  .insight-quote {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.35;
+    color: var(--paper);
+    font-weight: 300;
+    margin-bottom: 20px;
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+  .insight-quote::before {
+    content: "“";
+    font-size: 56px;
+    line-height: 0;
+    color: var(--accent-soft);
+    position: relative;
+    top: 22px;
+    margin-right: 4px;
+  }
+  .insight-byline {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(244,237,224,0.55);
+  }
+
+  /* ============= HOW IT WORKS ============= */
+  .how {
+    background: var(--paper-warm);
+  }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 80px;
+  }
+  .step-card {
+    background: var(--paper);
+    padding: 40px 32px;
+    border: 1px solid var(--rule);
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .step-card:nth-child(2) { transform: translateY(40px); }
+  .step-card:nth-child(3) { transform: translateY(80px); }
+  .step-card:hover {
+    box-shadow: 0 20px 40px rgba(26,26,26,0.08);
+  }
+  .step-card:nth-child(1):hover { transform: translateY(-4px); }
+  .step-card:nth-child(2):hover { transform: translateY(36px); }
+  .step-card:nth-child(3):hover { transform: translateY(76px); }
+
+  .step-num {
+    font-family: var(--display);
+    font-size: 88px;
+    line-height: 1;
+    color: var(--branch);
+    font-weight: 300;
+    font-variation-settings: "SOFT" 80, "WONK" 1, "opsz" 144;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .step-title {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+    font-variation-settings: "WONK" 1;
+  }
+  .step-desc {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  /* ============= WHY USE ============= */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    margin-top: 70px;
+    border-top: 1px solid var(--rule-strong);
+    border-left: 1px solid var(--rule-strong);
+  }
+  .why-item {
+    padding: 48px 40px;
+    border-right: 1px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+    background: var(--paper);
+    position: relative;
+    transition: background 0.3s;
+  }
+  .why-item:hover {
+    background: var(--paper-warm);
+  }
+  .why-icon {
+    width: 44px;
+    height: 44px;
+    color: var(--branch);
+    margin-bottom: 24px;
+  }
+  .why-title {
+    font-family: var(--display);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+    font-variation-settings: "WONK" 1;
+  }
+  .why-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 300;
+  }
+  .why-desc {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  /* ============= ADVANTAGES ============= */
+  .advantages {
+    background: var(--branch);
+    color: var(--paper);
+    padding: 140px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .advantages::after {
+    content: "";
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(244,237,224,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .advantages .section-eyebrow { color: var(--accent-soft); }
+  .advantages .section-eyebrow .num { color: rgba(244,237,224,0.5); }
+  .advantages h2.section-title { color: var(--paper); }
+  .advantages h2.section-title em {
+    color: var(--accent-soft);
+  }
+  .advantages .section-lede { color: rgba(244,237,224,0.75); }
+
+  .adv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(244,237,224,0.15);
+    margin-top: 80px;
+  }
+  .adv-item {
+    background: var(--branch);
+    padding: 40px 32px;
+  }
+  .adv-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent-soft);
+    margin-bottom: 18px;
+    letter-spacing: 0.05em;
+  }
+  .adv-headline {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    color: var(--paper);
+    font-variation-settings: "WONK" 1;
+  }
+  .adv-text {
+    font-size: 14px;
+    color: rgba(244,237,224,0.8);
+    line-height: 1.55;
+  }
+
+  /* ============= FREE SECTION ============= */
+  .free {
+    padding: 160px 0;
+  }
+  .free-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .free-visual {
+    position: relative;
+    aspect-ratio: 1;
+    max-width: 420px;
+  }
+  .free-visual .price-stamp {
+    font-family: var(--display);
+    font-size: 240px;
+    font-weight: 300;
+    line-height: 0.85;
+    color: var(--accent);
+    letter-spacing: -0.05em;
+    font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+    font-style: italic;
+    transform: rotate(-4deg);
+  }
+  .free-visual .price-strike {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+    width: 110%;
+    height: 4px;
+    background: var(--ink);
+    transform-origin: center;
+  }
+  .free-visual .price-label {
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 20px;
+  }
+  .free-text h2 {
+    margin-bottom: 36px;
+  }
+  .free-points {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-top: 40px;
+  }
+  .free-point {
+    display: flex;
+    gap: 20px;
+    align-items: start;
+  }
+  .free-point-mark {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    color: var(--branch);
+  }
+  .free-point-content h4 {
+    font-family: var(--display);
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-variation-settings: "WONK" 1;
+  }
+  .free-point-content p {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+
+  /* ============= FAQ ============= */
+  .faq {
+    background: var(--paper-warm);
+  }
+  .faq-list {
+    margin-top: 70px;
+    border-top: 1px solid var(--rule-strong);
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 32px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    transition: color 0.2s;
+    font-variation-settings: "WONK" 1;
+  }
+  .faq-question:hover {
+    color: var(--accent);
+  }
+  .faq-toggle {
+    font-family: var(--mono);
+    font-size: 24px;
+    color: var(--branch);
+    transition: transform 0.3s;
+  }
+  .faq-item[open] .faq-toggle {
+    transform: rotate(45deg);
+  }
+  .faq-answer {
+    padding: 0 0 32px 0;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    max-width: 800px;
+  }
+
+  /* ============= FINAL CTA ============= */
+  .final-cta {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 160px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 300px at 50% 0%, rgba(45, 94, 62, 0.4), transparent 70%),
+      radial-gradient(ellipse 800px 400px at 50% 100%, rgba(198, 74, 30, 0.2), transparent 70%);
+    pointer-events: none;
+  }
+  .final-cta-inner {
+    position: relative;
+    z-index: 1;
+  }
+  .final-cta h2 {
+    font-family: var(--display);
+    font-size: clamp(48px, 8vw, 110px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--paper);
+    margin-bottom: 36px;
+    font-variation-settings: "SOFT" 80, "WONK" 1, "opsz" 144;
+  }
+  .final-cta h2 em {
+    font-style: italic;
+    color: var(--accent-soft);
+    font-weight: 300;
+  }
+  .final-cta p {
+    font-size: 18px;
+    color: rgba(244,237,224,0.75);
+    max-width: 560px;
+    margin: 0 auto 50px;
+    line-height: 1.6;
+  }
+  .final-cta .btn-primary {
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 16px;
+    padding: 22px 40px;
+  }
+  .final-cta .btn-primary:hover {
+    background: var(--accent-soft);
+    color: var(--ink);
+  }
+
+  /* ============= FOOTER ============= */
+  footer {
+    background: var(--paper-deep);
+    padding: 60px 0 40px;
+    border-top: 1px solid var(--rule);
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: end;
+  }
+  .footer-brand {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    font-variation-settings: "WONK" 1;
+  }
+  .footer-tagline {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 6px;
+  }
+  .footer-links {
+    display: flex;
+    gap: 28px;
+    font-size: 14px;
+  }
+  .footer-links a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-meta {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* ============= RESPONSIVE ============= */
+  @media (max-width: 900px) {
+    .container { padding: 0 24px; }
+    .hero { padding: 60px 0 80px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 50px; }
+    .hero-visual { max-width: 360px; margin: 0 auto; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    section { padding: 90px 0; }
+    .problem { padding: 100px 0; }
+    .advantages { padding: 100px 0; }
+    .problem-grid { grid-template-columns: 1fr; gap: 50px; }
+    .steps { grid-template-columns: 1fr; gap: 20px; }
+    .step-card:nth-child(2),
+    .step-card:nth-child(3) { transform: none; }
+    .step-card:nth-child(2):hover,
+    .step-card:nth-child(3):hover { transform: translateY(-4px); }
+    .why-grid { grid-template-columns: 1fr; }
+    .adv-grid { grid-template-columns: 1fr; }
+    .free-grid { grid-template-columns: 1fr; gap: 50px; }
+    .free-visual .price-stamp { font-size: 160px; }
+    .final-cta { padding: 100px 0; }
+  }
+
+  /* Stagger fade-in for hero text */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+  .fade-up.d1 { animation-delay: 0.1s; }
+  .fade-up.d2 { animation-delay: 0.25s; }
+  .fade-up.d3 { animation-delay: 0.4s; }
+  .fade-up.d4 { animation-delay: 0.55s; }
+  .fade-up.d5 { animation-delay: 0.7s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============= NAV ============= -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="6" cy="16" r="3" fill="currentColor"/>
+        <circle cx="26" cy="6" r="3" fill="currentColor"/>
+        <circle cx="26" cy="26" r="3" fill="currentColor"/>
+        <path d="M6 16 Q 16 16, 16 6 T 26 6" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M6 16 Q 16 16, 16 26 T 26 26" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+      Ramificar
+    </div>
+    <div class="nav-links">
+      <a href="#como">Cómo funciona</a>
+      <a href="#ventajas">Ventajas</a>
+      <a href="#gratis">Gratis</a>
+      <a href="#faq">FAQ</a>
+      <a href="#" class="nav-cta">Instalar</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============= HERO ============= -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow fade-up d1">Extensión Chrome · v1.0</div>
+        <h1 class="headline">
+          <span class="fade-up d2">Una idea</span><br>
+          <span class="fade-up d3"><em>se ramifica.</em></span><br>
+          <span class="fade-up d4">La <span class="branch-word">conversación</span> no se rompe.</span>
+        </h1>
+        <p class="lede fade-up d5">
+          Selecciona cualquier fragmento de tu chat con IA, pulsa <em>Ramificar</em>, y abre una nueva pestaña con el contexto exacto que querías explorar. Sin copiar y pegar. Sin perder el hilo. Sin volver atrás.
+        </p>
+        <div class="hero-cta-row fade-up d5">
+          <a href="#" class="btn-primary">
+            Añadir a Chrome — gratis
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10m0 0L8 3m5 5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </a>
+          <a href="#como" class="btn-secondary">Ver en 30 segundos</a>
+        </div>
+        <div class="meta-row fade-up d5">
+          <div class="meta-item"><span class="dot"></span>Sin cuenta</div>
+          <div class="meta-item"><span class="dot"></span>Sin servidores</div>
+          <div class="meta-item"><span class="dot"></span>Código abierto</div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
+          <!-- Branches -->
+          <path class="branch-line" d="M 80 240 Q 200 240, 240 140 T 400 100"
+                stroke="#2d5e3e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path class="branch-line delay-1" d="M 80 240 Q 200 240, 240 240 T 400 240"
+                stroke="#2d5e3e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path class="branch-line delay-2" d="M 80 240 Q 200 240, 240 340 T 400 380"
+                stroke="#c64a1e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path class="branch-line delay-3" d="M 240 140 Q 320 140, 340 60 T 420 30"
+                stroke="#2d5e3e" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+
+          <!-- Origin node -->
+          <circle class="node-circle n1" cx="80" cy="240" r="14" fill="#1a1a1a"/>
+          <circle class="node-circle n1" cx="80" cy="240" r="6" fill="#f4ede0"/>
+
+          <!-- Mid nodes -->
+          <circle class="node-circle n2" cx="240" cy="140" r="9" fill="#2d5e3e"/>
+          <circle class="node-circle n3" cx="240" cy="240" r="9" fill="#2d5e3e"/>
+          <circle class="node-circle n4" cx="240" cy="340" r="9" fill="#c64a1e"/>
+
+          <!-- End nodes -->
+          <circle class="node-circle n5" cx="400" cy="100" r="11" fill="none" stroke="#2d5e3e" stroke-width="2"/>
+          <circle class="node-circle n5" cx="400" cy="240" r="11" fill="none" stroke="#2d5e3e" stroke-width="2"/>
+          <circle class="node-circle n5" cx="400" cy="380" r="11" fill="none" stroke="#c64a1e" stroke-width="2"/>
+          <circle class="node-circle n5" cx="420" cy="30" r="7" fill="none" stroke="#2d5e3e" stroke-width="1.5" opacity="0.6"/>
+
+          <!-- Labels -->
+          <text class="node-circle n1" x="60" y="270" font-family="JetBrains Mono" font-size="10" fill="#2c2a26" text-anchor="middle" letter-spacing="1.5">CHAT ORIGEN</text>
+          <text class="node-circle n5" x="400" y="135" font-family="JetBrains Mono" font-size="10" fill="#2c2a26" text-anchor="middle" letter-spacing="1.5">RAMA 1</text>
+          <text class="node-circle n5" x="400" y="275" font-family="JetBrains Mono" font-size="10" fill="#2c2a26" text-anchor="middle" letter-spacing="1.5">RAMA 2</text>
+          <text class="node-circle n5" x="400" y="415" font-family="JetBrains Mono" font-size="10" fill="#c64a1e" text-anchor="middle" letter-spacing="1.5">RAMA 3</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============= COMPATIBLE ============= -->
+<section class="compatible" style="padding-top: 50px; padding-bottom: 50px;">
+  <div class="container">
+    <div class="compatible-inner">
+      <div class="compatible-label">Compatible con</div>
+      <div class="ai-list">
+        <span class="ai-name">ChatGPT</span>
+        <span class="ai-name"><em style="font-style: italic;">Claude</em></span>
+        <span class="ai-name">Gemini</span>
+        <span class="ai-name">Grok</span>
+        <span class="ai-name">DeepSeek</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= PROBLEM ============= -->
+<section class="problem">
+  <div class="container">
+    <div class="section-eyebrow"><span class="num">01</span> El problema</div>
+    <h2 class="section-title">Cuando una idea te tienta a <em>desviarte</em>, hoy pierdes el hilo.</h2>
+    <p class="section-lede">
+      Estás en mitad de una conversación importante con tu IA. De pronto, la respuesta menciona algo que merece su propia exploración. Empieza el ritual:
+    </p>
+
+    <div class="problem-grid">
+      <div class="scenario">
+        <div class="step bad">
+          <div class="step-label">Paso 1</div>
+          <div class="step-text">Seleccionas el fragmento, lo copias.</div>
+        </div>
+        <div class="step bad">
+          <div class="step-label">Paso 2</div>
+          <div class="step-text">Abres una pestaña nueva. Sin contexto.</div>
+        </div>
+        <div class="step bad">
+          <div class="step-label">Paso 3</div>
+          <div class="step-text">Pegas. Escribes a mano que esto viene de otra conversación.</div>
+        </div>
+        <div class="step bad">
+          <div class="step-label">Paso 4</div>
+          <div class="step-text">Te das cuenta de que la IA no sabe qué estabas hablando antes.</div>
+        </div>
+        <div class="step bad">
+          <div class="step-label">Paso 5</div>
+          <div class="step-text">Vuelves a la pestaña original. Has perdido la frase exacta que querías explorar.</div>
+        </div>
+      </div>
+
+      <div class="insight">
+        <p class="insight-quote">
+          Las buenas ideas no aparecen donde las esperas. Aparecen como notas al margen, como tangentes, como susurros dentro de otra conversación. Necesitan un sitio donde respirar sin matar la conversación que las trajo.
+        </p>
+        <div class="insight-byline">— La filosofía de Ramificar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= HOW IT WORKS ============= -->
+<section class="how" id="como">
+  <div class="container">
+    <div class="section-eyebrow"><span class="num">02</span> Cómo funciona</div>
+    <h2 class="section-title">Tres pasos. <em>Cero fricción.</em></h2>
+    <p class="section-lede">
+      Ramificar vive en tu menú contextual. Aparece cuando lo necesitas, desaparece cuando no.
+    </p>
+
+    <div class="steps">
+      <article class="step-card">
+        <div class="step-num">i</div>
+        <h3 class="step-title">Selecciona</h3>
+        <p class="step-desc">
+          Marca el fragmento exacto que quieres explorar — una frase, un párrafo, un dato. Click derecho. Verás "Ramificar" en el menú.
+        </p>
+      </article>
+      <article class="step-card">
+        <div class="step-num">ii</div>
+        <h3 class="step-title">Contextualiza</h3>
+        <p class="step-desc">
+          Aparece un modal con tu fragmento ya entrecomillado. Añade tu pregunta o el ángulo que quieres explorar. Sin formato, sin distracciones.
+        </p>
+      </article>
+      <article class="step-card">
+        <div class="step-num">iii</div>
+        <h3 class="step-title">Ramifica</h3>
+        <p class="step-desc">
+          Pulsas "Abrir Rama". Una pestaña nueva se abre en la misma IA, con tu prompt enviado automáticamente. La conversación original queda intacta.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============= WHY USE ============= -->
+<section id="por-que">
+  <div class="container">
+    <div class="section-eyebrow"><span class="num">03</span> Por qué usarla</div>
+    <h2 class="section-title">No es un atajo. Es una <em>forma de pensar.</em></h2>
+    <p class="section-lede">
+      Las conversaciones largas con IA acumulan contexto valioso. Romperlas para explorar una tangente sale caro. Mantenerlas pero ignorar la tangente sale aún más caro.
+    </p>
+
+    <div class="why-grid">
+      <div class="why-item">
+        <svg class="why-icon" viewBox="0 0 44 44" fill="none">
+          <circle cx="22" cy="22" r="20" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M14 22h16M22 14v16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <h3 class="why-title">Tu hilo principal <em>queda intacto</em></h3>
+        <p class="why-desc">
+          La conversación original sigue donde la dejaste. Vuelves cuando quieras, sin haber añadido ruido ni desviaciones que luego cuestan de desentrañar.
+        </p>
+      </div>
+
+      <div class="why-item">
+        <svg class="why-icon" viewBox="0 0 44 44" fill="none">
+          <path d="M8 36V8h28M8 36h28V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 22l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3 class="why-title">El contexto <em>viaja contigo</em></h3>
+        <p class="why-desc">
+          La nueva pestaña arranca con la cita exacta y tu pregunta. La IA entiende de dónde viene la idea sin que tengas que explicárselo otra vez.
+        </p>
+      </div>
+
+      <div class="why-item">
+        <svg class="why-icon" viewBox="0 0 44 44" fill="none">
+          <circle cx="14" cy="22" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="30" cy="14" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="30" cy="30" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M19 19l6-3M19 25l6 3" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <h3 class="why-title">Funciona en <em>todas</em> tus IAs</h3>
+        <p class="why-desc">
+          ChatGPT, Claude, Gemini, Grok, DeepSeek. Una sola extensión, cinco plataformas. Mismo gesto, misma comodidad, sin reaprender nada.
+        </p>
+      </div>
+
+      <div class="why-item">
+        <svg class="why-icon" viewBox="0 0 44 44" fill="none">
+          <path d="M22 6v8M22 30v8M6 22h8M30 22h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="22" cy="22" r="8" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <h3 class="why-title">Cero fricción, <em>cero clicks</em> extra</h3>
+        <p class="why-desc">
+          El envío es automático. Mientras antes hacías cinco pasos manuales, ahora haces dos: seleccionar y abrir la rama. El resto pasa solo.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= ADVANTAGES ============= -->
+<section class="advantages" id="ventajas">
+  <div class="container">
+    <div class="section-eyebrow"><span class="num">04</span> Ventajas</div>
+    <h2 class="section-title">Pequeña extensión. <em>Grandes consecuencias.</em></h2>
+    <p class="section-lede">
+      Lo que parece un truco menor cambia silenciosamente cómo investigas, escribes y aprendes con IA.
+    </p>
+
+    <div class="adv-grid">
+      <div class="adv-item">
+        <div class="adv-num">→ 01</div>
+        <h3 class="adv-headline">Pensamiento ramificado real</h3>
+        <p class="adv-text">Las ideas dejan de ser lineales. Puedes seguir varias líneas de exploración a la vez, cada una con su contexto, sin que se contaminen.</p>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">→ 02</div>
+        <h3 class="adv-headline">Investigación sin pérdidas</h3>
+        <p class="adv-text">Cada tangente se convierte en su propia conversación archivable. Puedes volver a ella días después y seguir tirando del hilo.</p>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">→ 03</div>
+        <h3 class="adv-headline">Sin reescribir contexto</h3>
+        <p class="adv-text">El fragmento citado le da a la IA destino exactamente lo que necesita: la frase exacta y la intención. Respuestas más relevantes desde el primer mensaje.</p>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">→ 04</div>
+        <h3 class="adv-headline">Privacidad total</h3>
+        <p class="adv-text">Nada sale de tu navegador. Ningún servidor, ninguna telemetría, ninguna cuenta. El texto que seleccionas se queda donde estaba: en tu sesión.</p>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">→ 05</div>
+        <h3 class="adv-headline">Permisos mínimos</h3>
+        <p class="adv-text">Solo accede a las cinco webs de IA donde la usas. Nada más. Verificable abriendo el código fuente — está publicado en GitHub.</p>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">→ 06</div>
+        <h3 class="adv-headline">Funciona aunque cambien</h3>
+        <p class="adv-text">Adaptadores específicos por plataforma, mantenidos abiertamente. Cuando una IA cambia su interfaz, la actualización llega rápido.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FREE ============= -->
+<section class="free" id="gratis">
+  <div class="container">
+    <div class="free-grid">
+      <div class="free-visual">
+        <div style="position: relative;">
+          <span class="price-stamp">0€</span>
+        </div>
+        <div class="price-label">Para siempre</div>
+      </div>
+
+      <div class="free-text">
+        <div class="section-eyebrow"><span class="num">05</span> Gratis</div>
+        <h2 class="section-title">Es gratuita. <em>Y va a seguir siéndolo.</em></h2>
+        <p class="section-lede">
+          No hay versión Pro. No hay paywall. No hay "primero gratis, luego ya veremos". Aquí van los motivos:
+        </p>
+
+        <div class="free-points">
+          <div class="free-point">
+            <svg class="free-point-mark" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M9 14l3.5 3.5L19 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="free-point-content">
+              <h4>Sin servidores que pagar</h4>
+              <p>La extensión funciona enteramente en tu navegador. No hay infraestructura detrás, no hay costes recurrentes que justifiquen una suscripción.</p>
+            </div>
+          </div>
+          <div class="free-point">
+            <svg class="free-point-mark" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M9 14l3.5 3.5L19 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="free-point-content">
+              <h4>Sin datos que vender</h4>
+              <p>No recopila nada. No hay base de datos de usuarios, no hay perfiles, no hay nada que monetizar a tu costa. La privacidad no es un argumento de marketing: es la arquitectura.</p>
+            </div>
+          </div>
+          <div class="free-point">
+            <svg class="free-point-mark" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M9 14l3.5 3.5L19 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="free-point-content">
+              <h4>Software como herramienta, no como servicio</h4>
+              <p>Una buena extensión debería ser como un buen martillo: la pagas una vez (en este caso ni eso) y la usas hasta que se rompa. Punto.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FAQ ============= -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-eyebrow"><span class="num">06</span> Preguntas frecuentes</div>
+    <h2 class="section-title">Lo que <em>te estás preguntando.</em></h2>
+
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary class="faq-question">
+          ¿Funciona con la IA que uso a diario?
+          <span class="faq-toggle">+</span>
+        </summary>
+        <div class="faq-answer">
+          Si esa IA es ChatGPT, Claude, Gemini, Grok o DeepSeek, sí — sin configuración. Si usas otra plataforma, abre un issue en GitHub: añadir un nuevo adaptador suele ser trabajo de un par de horas si la web tiene un composer accesible.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          ¿Necesito iniciar sesión en algo?
+          <span class="faq-toggle">+</span>
+        </summary>
+        <div class="faq-answer">
+          No. Ramificar no tiene cuentas. Instalas, usas. Tus sesiones de las IAs son las que ya tienes en tu navegador — la extensión no las toca, solo opera dentro de la pestaña activa cuando se lo pides.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          ¿Qué hace exactamente con mis datos?
+          <span class="faq-toggle">+</span>
+        </summary>
+        <div class="faq-answer">
+          Guarda temporalmente el texto seleccionado en el almacenamiento local del navegador para pasarlo a la nueva pestaña. Esa información se borra automáticamente en cuanto se entrega. Nunca se envía a un servidor externo, nunca se persiste, nunca se comparte. Hay un audit completo en el README del repositorio.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          ¿Se actualiza sola?
+          <span class="faq-toggle">+</span>
+        </summary>
+        <div class="faq-answer">
+          Sí. Una vez instalada desde la Chrome Web Store, las actualizaciones llegan automáticamente. Especialmente importante cuando alguna IA cambia su interfaz — esos parches se publican en cuanto se detecta el cambio.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          ¿Funciona en Brave, Edge, Arc, Vivaldi?
+          <span class="faq-toggle">+</span>
+        </summary>
+        <div class="faq-answer">
+          Sí. Cualquier navegador basado en Chromium acepta extensiones de la Chrome Web Store. La instalación es idéntica. Para Firefox no está disponible aún por diferencias en la API de extensiones, pero está en el roadmap.
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          ¿Puedo desactivarla solo en algunas webs?
+          <span class="faq-toggle">+</span>
+        </summary>
+        <div class="faq-answer">
+          Sí. La página de opciones de la extensión te deja activar o desactivar individualmente cada una de las cinco IAs soportadas. Por defecto están todas activas.
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FINAL CTA ============= -->
+<section class="final-cta">
+  <div class="container">
+    <div class="final-cta-inner">
+      <h2>Selecciona.<br><em>Ramifica.</em><br>Sigue pensando.</h2>
+      <p>Instálala en treinta segundos. La próxima vez que una conversación con IA te lleve a una idea que merezca su propia rama, no perderás el hilo.</p>
+      <a href="#" class="btn-primary">
+        Añadir a Chrome
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10m0 0L8 3m5 5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FOOTER ============= -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Ramificar</div>
+        <div class="footer-tagline">Una idea por rama. Una rama por idea.</div>
+      </div>
+      <div class="footer-links">
+        <a href="#">GitHub</a>
+        <a href="#">Chrome Store</a>
+        <a href="#">Privacidad</a>
+        <a href="#">Contacto</a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <div>© 2026 Ramificar — código abierto, sin telemetría</div>
+      <div>v1.0.0 · MIT License</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
