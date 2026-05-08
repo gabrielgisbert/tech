@@ -1,237 +1,704 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Knowledge Hub - Mis Resúmenes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Knowledge Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         :root {
-            --primary-color: #2563eb;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --transition: all 0.3s ease;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --bg: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
+        }
+
+        .header-content {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         h1 {
-            font-weight: 700;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: var(--text-main);
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
         }
 
-        p.subtitle {
-            margin-bottom: 40px;
-            color: #64748b;
+        .subtitle {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            font-weight: 400;
         }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
+        .stats {
+            display: inline-flex;
+            gap: 24px;
+            margin-top: 24px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .btn-card {
-            background: var(--card-bg);
-            border: 1px solid #e2e8f0;
-            padding: 25px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: var(--text-main);
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
             font-weight: 500;
+        }
+
+        .stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .stat-dot.error {
+            background: #f87171;
+            box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: -40px auto 0;
+            padding: 0 20px 60px;
+            position: relative;
+        }
+
+        .toolbar {
+            background: var(--card);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            transition: var(--transition);
+            background: var(--bg-secondary);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0.5;
+        }
+
+        .btn-refresh {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-decoration: none;
+            color: var(--text);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: var(--transition);
+            color: white;
+            font-weight: 700;
+            font-size: 1.125rem;
         }
 
-        .btn-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary-color);
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
-            color: var(--primary-color);
+        .card-title {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-meta {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: auto;
+            word-break: break-all;
+        }
+
+        .loading, .empty-state, .error-state {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .empty-state, .error-state {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .error-state {
+            border-color: var(--error);
+            background: #fef2f2;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .state-text {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+            max-width: 500px;
         }
 
         .fab {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background-color: var(--primary-color);
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
             color: white;
+            border: none;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
             transition: var(--transition);
         }
 
         .fab:hover {
-            transform: scale(1.1) rotate(90deg);
+            background: var(--primary-dark);
+            transform: scale(1.05);
         }
 
         .side-menu {
             position: fixed;
             top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100%;
-            background: var(--card-bg);
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            z-index: 1001;
-            transition: var(--transition);
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            right: -360px;
+            width: 360px;
+            max-width: 90vw;
+            height: 100vh;
+            background: var(--card);
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
         }
 
         .side-menu.active {
             right: 0;
         }
 
-        .side-menu h2 {
-            font-size: 1.2rem;
-            border-bottom: 2px solid var(--bg-color);
-            padding-bottom: 10px;
+        .side-menu-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .side-menu-header h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: var(--bg-secondary);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .side-menu-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
         }
 
         .menu-link {
             display: block;
-            padding: 12px 15px;
+            padding: 10px 16px;
             text-decoration: none;
-            color: var(--text-main);
+            color: var(--text);
             border-radius: 8px;
-            margin-bottom: 5px;
-            transition: background 0.2s;
+            margin-bottom: 4px;
+            font-size: 0.9375rem;
+            transition: var(--transition);
         }
 
         .menu-link:hover {
-            background: var(--bg-color);
-            color: var(--primary-color);
+            background: var(--bg-secondary);
+            color: var(--primary);
         }
 
-        .overlay-bg {
+        .overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.3);
-            display: none;
-            z-index: 999;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 150;
+            transition: opacity 0.3s;
         }
 
-        .overlay-bg.active {
-            display: block;
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .loading {
-            text-align: center;
-            color: #64748b;
+        @media (max-width: 640px) {
+            .header { padding: 40px 20px 60px; }
+            .container { margin-top: -30px; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <h1>Knowledge Hub</h1>
-    <p class="subtitle">Selecciona una tecnología para ver el resumen</p>
+    <header class="header">
+        <div class="header-content">
+            <h1>Knowledge Hub</h1>
+            <p class="subtitle">Tu colección de tecnologías y resúmenes técnicos</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-dot" id="statusDot"></span>
+                    <span id="statusText">Cargando...</span>
+                </div>
+                <div class="stat-item">
+                    <span>📚</span>
+                    <span id="countText">0 páginas</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <div id="gridContainer" class="grid-container">
-        <p class="loading">Cargando páginas...</p>
-    </div>
+    <main class="container">
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar páginas...">
+            </div>
+            <button class="btn-refresh" onclick="cargarPaginas()">
+                <span>↻</span>
+                <span>Actualizar</span>
+            </button>
+        </div>
 
-    <div class="fab" onclick="toggleMenu()">☰</div>
-    <div id="overlay" class="overlay-bg" onclick="toggleMenu()"></div>
+        <div id="grid" class="grid">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p class="state-text">Conectando con GitHub...</p>
+            </div>
+        </div>
+    </main>
 
-    <div id="sideMenu" class="side-menu">
-        <h2>Acceso Rápido</h2>
-        <div id="menuList"></div>
-    </div>
+    <button class="fab" onclick="toggleMenu()" aria-label="Menú">☰</button>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <aside class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h2>Acceso Rápido</h2>
+            <button class="close-btn" onclick="toggleMenu()">✕</button>
+        </div>
+        <div class="side-menu-body" id="menuList"></div>
+    </aside>
 
     <script>
-        // Obtener el nombre del archivo actual
-        const paginaActual = window.location.pathname.split('/').pop() || 'index.html';
+        // ============================================================
+        // CONFIGURACIÓN
+        // ============================================================
+        const CONFIG = {
+            user: 'gabrielgisbert',
+            repo: 'tech',
+            branch: 'main',
+            recursive: true,        // Buscar también en subcarpetas
+            excludeCurrent: true    // No listar la página actual
+        };
 
-        // Función para obtener archivos HTML dinámicamente
+        let todasLasPaginas = [];
+        const paginaActual = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+
+        // ============================================================
+        // CARGA DE PÁGINAS
+        // Usa Git Trees API con recursive=1 → obtiene TODOS los archivos
+        // ============================================================
         async function cargarPaginas() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p class="state-text">Obteniendo archivos del repositorio...</p>
+                </div>
+            `;
+            actualizarEstado('Cargando...', 0, false);
+
             try {
-                // Opción A: Si tienes un archivo JSON con la lista
-                const response = await fetch('pages.json');
-                let paginas = await response.json();
+                const apiUrl = `https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/git/trees/${CONFIG.branch}?recursive=1`;
+                
+                console.log('🔍 Consultando:', apiUrl);
+                
+                const response = await fetch(apiUrl, {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' }
+                });
 
-                // Opción B: Si usas GitHub API (para repositorios públicos)
-                // const response = await fetch('https://api.github.com/repos/TU_USUARIO/TU_REPO/contents/');
-                // let datos = await response.json();
-                // let paginas = datos
-                //     .filter(file => file.name.endsWith('.html'))
-                //     .map(file => ({ nombre: file.name.replace('.html', ''), url: file.name }));
+                if (!response.ok) {
+                    if (response.status === 403) throw new Error('Límite de API de GitHub alcanzado. Intenta en unos minutos.');
+                    if (response.status === 404) throw new Error('Repositorio no encontrado. Verifica que sea público.');
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
 
-                // Filtrar la página actual
-                paginas = paginas.filter(p => p.url !== paginaActual);
+                const data = await response.json();
+                
+                if (data.truncated) {
+                    console.warn('⚠️ Respuesta truncada (repo muy grande)');
+                }
 
+                // Filtrar TODOS los archivos .html
+                let archivosHtml = data.tree.filter(item => 
+                    item.type === 'blob' &&
+                    item.path.toLowerCase().endsWith('.html')
+                );
+
+                // Si no es recursivo, solo archivos en la raíz
+                if (!CONFIG.recursive) {
+                    archivosHtml = archivosHtml.filter(item => !item.path.includes('/'));
+                }
+
+                console.log(`✅ ${archivosHtml.length} archivos HTML encontrados`);
+
+                // Procesar
+                let paginas = archivosHtml.map(item => {
+                    const ruta = item.path;
+                    const nombreArchivo = ruta.split('/').pop();
+                    const carpeta = ruta.includes('/') ? ruta.substring(0, ruta.lastIndexOf('/')) : '';
+                    
+                    return {
+                        ruta: ruta,
+                        nombre: formatearNombre(nombreArchivo),
+                        nombreArchivo: nombreArchivo,
+                        carpeta: carpeta,
+                        url: ruta,
+                        inicial: nombreArchivo.charAt(0).toUpperCase()
+                    };
+                });
+
+                // Excluir página actual
+                if (CONFIG.excludeCurrent) {
+                    paginas = paginas.filter(p => 
+                        p.nombreArchivo.toLowerCase() !== paginaActual &&
+                        p.ruta.toLowerCase() !== paginaActual
+                    );
+                }
+
+                // Ordenar
+                paginas.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+
+                console.log(`📋 ${paginas.length} páginas a mostrar:`, paginas.map(p => p.ruta));
+
+                todasLasPaginas = paginas;
+                actualizarEstado('Conectado', paginas.length, true);
                 renderizar(paginas);
+
             } catch (error) {
-                console.error('Error al cargar páginas:', error);
-                document.getElementById('gridContainer').innerHTML = 
-                    '<p class="loading">Error al cargar las páginas. Usa pages.json o actualiza manualmente.</p>';
+                console.error('❌ Error:', error);
+                actualizarEstado('Error', 0, false);
+                mostrarError(error.message);
             }
         }
 
+        // ============================================================
+        // FORMATEAR NOMBRE: "GitHubPro.html" → "Git Hub Pro"
+        // ============================================================
+        function formatearNombre(nombreArchivo) {
+            return nombreArchivo
+                .replace(/\.html$/i, '')
+                .replace(/[-_]/g, ' ')
+                .replace(/([a-z])([A-Z])/g, '$1 $2')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        // ============================================================
+        // RENDERIZAR
+        // ============================================================
         function renderizar(paginas) {
-            const gridContainer = document.getElementById('gridContainer');
+            const grid = document.getElementById('grid');
             const menuList = document.getElementById('menuList');
             
-            gridContainer.innerHTML = ''; // Limpiar
+            grid.innerHTML = '';
+            menuList.innerHTML = '';
 
             if (paginas.length === 0) {
-                gridContainer.innerHTML = '<p class="loading">No hay otras páginas disponibles</p>';
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="state-icon">📭</div>
+                        <h3 class="state-title">Sin resultados</h3>
+                        <p class="state-text">No se encontraron páginas que coincidan.</p>
+                    </div>
+                `;
                 return;
             }
 
             paginas.forEach(pg => {
-                // Card para la Grid
                 const card = document.createElement('a');
                 card.href = pg.url;
-                card.className = 'btn-card';
-                card.innerHTML = `<span>${pg.nombre}</span>`;
-                gridContainer.appendChild(card);
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-icon">${pg.inicial}</div>
+                    <div class="card-title">${pg.nombre}</div>
+                    <div class="card-meta">
+                        <span>📄</span>
+                        <span>${pg.carpeta ? pg.carpeta + '/' : ''}${pg.nombreArchivo}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
 
-                // Enlace para el menú lateral
                 const link = document.createElement('a');
                 link.href = pg.url;
                 link.className = 'menu-link';
-                link.innerText = pg.nombre;
+                link.textContent = pg.nombre;
                 menuList.appendChild(link);
             });
         }
 
+        // ============================================================
+        // ESTADO Y ERRORES
+        // ============================================================
+        function actualizarEstado(estado, cantidad, exito) {
+            document.getElementById('statusText').textContent = estado;
+            document.getElementById('countText').textContent = `${cantidad} página${cantidad !== 1 ? 's' : ''}`;
+            const dot = document.getElementById('statusDot');
+            dot.classList.toggle('error', !exito && estado === 'Error');
+        }
+
+        function mostrarError(mensaje) {
+            document.getElementById('grid').innerHTML = `
+                <div class="error-state">
+                    <div class="state-icon">⚠️</div>
+                    <h3 class="state-title">No se pudieron cargar las páginas</h3>
+                    <p class="state-text">${mensaje}</p>
+                    <button class="btn-refresh" onclick="cargarPaginas()" style="margin-top: 20px;">
+                        <span>↻</span>
+                        <span>Reintentar</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // BÚSQUEDA EN VIVO
+        // ============================================================
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) return renderizar(todasLasPaginas);
+            
+            const filtradas = todasLasPaginas.filter(pg => 
+                pg.nombre.toLowerCase().includes(query) ||
+                pg.nombreArchivo.toLowerCase().includes(query) ||
+                pg.carpeta.toLowerCase().includes(query)
+            );
+            renderizar(filtradas);
+        });
+
+        // ============================================================
+        // MENÚ LATERAL
+        // ============================================================
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // Inicializar
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('sideMenu').classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+            }
+        });
+
+        // ============================================================
+        // INICIALIZACIÓN
+        // ============================================================
         cargarPaginas();
     </script>
 </body>
