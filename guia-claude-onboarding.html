@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Claude · Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;600&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ====== TOKENS ====== */
+  :root {
+    --ink: #0a0a0a;
+    --paper: #faf7f2;
+    --paper-2: #f3ede2;
+    --rule: #e6dfd2;
+    --rule-strong: #c9bda3;
+    --accent: #d94f04;       /* naranja quemado */
+    --accent-2: #1a3d2e;     /* verde bosque */
+    --accent-3: #6b4423;     /* marrón tabaco */
+    --highlight: #f5e6a8;    /* amarillo papel */
+    --code-bg: #1a1816;
+    --code-text: #f5e9d0;
+    --muted: #6b6357;
+    --warn: #b03a04;
+    --safe: #1a3d2e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 20px; }
+
+  body {
+    font-family: 'Inter Tight', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(217,79,4,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(26,61,46,0.04) 0%, transparent 50%);
+  }
+
+  /* Grano sutil */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  /* ====== LAYOUT ====== */
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ====== HEADER ====== */
+  .hero {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 50px;
+    margin-bottom: 60px;
+    position: relative;
+  }
+
+  .hero-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 12px;
+  }
+
+  .hero-meta span:first-child { color: var(--accent); font-weight: 600; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(48px, 7vw, 92px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+    font-variation-settings: "opsz" 144;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    line-height: 1.4;
+    color: var(--accent-3);
+    max-width: 720px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    margin-top: 32px;
+    padding: 6px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  /* ====== TOC ====== */
+  .toc {
+    background: var(--paper-2);
+    border: 1px solid var(--rule-strong);
+    padding: 36px 40px;
+    margin-bottom: 80px;
+    position: relative;
+  }
+
+  .toc::before {
+    content: 'ÍNDICE';
+    position: absolute;
+    top: -10px;
+    left: 24px;
+    background: var(--paper);
+    padding: 0 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+  }
+
+  .toc-section h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .toc-section ul { list-style: none; }
+  .toc-section li {
+    font-size: 14px;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .toc-section a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+    transition: all 0.15s;
+  }
+  .toc-section a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ====== SECTION HEADERS ====== */
+  .section {
+    margin-bottom: 100px;
+    scroll-margin-top: 40px;
+  }
+
+  .section-header {
+    margin-bottom: 50px;
+    border-bottom: 3px double var(--ink);
+    padding-bottom: 24px;
+    position: relative;
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .section-header h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    font-variation-settings: "opsz" 144;
+  }
+
+  .section-header h2 em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .section-intro {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--accent-3);
+    max-width: 760px;
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+  }
+
+  /* ====== H3 / H4 ====== */
+  h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 32px;
+    margin-top: 60px;
+    margin-bottom: 18px;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    position: relative;
+    padding-left: 28px;
+  }
+
+  h3::before {
+    content: '§';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    color: var(--accent);
+    font-size: 24px;
+  }
+
+  h4 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    color: var(--accent-2);
+    letter-spacing: -0.01em;
+  }
+
+  /* ====== TEXT ====== */
+  p { margin-bottom: 16px; }
+
+  p strong {
+    font-weight: 600;
+    background: linear-gradient(180deg, transparent 60%, var(--highlight) 60%);
+    padding: 0 2px;
+  }
+
+  a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+  ul, ol { margin: 16px 0 16px 28px; }
+  li { margin-bottom: 8px; }
+  li strong { font-weight: 600; color: var(--accent-2); }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+    background: var(--paper-2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+    color: var(--accent-3);
+  }
+
+  /* ====== BLOCKS ====== */
+  .block-code {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 24px 28px;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+    border-left: 4px solid var(--accent);
+    position: relative;
+  }
+  .block-code::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--accent);
+    color: var(--code-text);
+    padding: 3px 12px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .block-code .c-tag { color: #f5a878; }
+  .block-code .c-attr { color: #b8d77a; }
+  .block-code .c-str { color: #e6c878; }
+  .block-code .c-com { color: #7a7062; font-style: italic; }
+  .block-code .c-key { color: #ff7e6b; }
+
+  /* Símil */
+  .simile {
+    background: var(--paper-2);
+    border-left: 4px solid var(--accent-3);
+    padding: 22px 28px;
+    margin: 24px 0;
+    position: relative;
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    line-height: 1.6;
+    font-style: italic;
+    color: var(--ink);
+  }
+  .simile::before {
+    content: 'SÍMIL';
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--paper);
+    padding: 0 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent-3);
+    font-style: normal;
+  }
+
+  /* Ejemplo */
+  .example {
+    background: #fffdf5;
+    border: 1px solid var(--rule-strong);
+    padding: 24px 28px;
+    margin: 24px 0;
+    position: relative;
+  }
+  .example::before {
+    content: 'EJEMPLO';
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--paper);
+    padding: 0 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+  }
+  .example h5 {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-3);
+    margin-bottom: 8px;
+  }
+
+  /* Caja crítica/aviso */
+  .alert {
+    background: #fef3e8;
+    border: 2px solid var(--accent);
+    padding: 22px 28px;
+    margin: 24px 0;
+    position: relative;
+  }
+  .alert::before {
+    content: '⚠ ATENCIÓN';
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--accent);
+    color: var(--paper);
+    padding: 3px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    font-weight: 600;
+  }
+
+  /* Tip box */
+  .tip {
+    background: #ecf2ee;
+    border: 1px solid var(--accent-2);
+    padding: 22px 28px;
+    margin: 24px 0;
+    position: relative;
+  }
+  .tip::before {
+    content: '✦ PRO TIP';
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--accent-2);
+    color: var(--paper);
+    padding: 3px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    font-weight: 600;
+  }
+
+  /* Comparación buena/mala */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .compare > div {
+    padding: 20px 22px;
+    border: 1px solid var(--rule);
+    background: var(--paper-2);
+  }
+  .compare .bad {
+    border-left: 4px solid var(--warn);
+  }
+  .compare .good {
+    border-left: 4px solid var(--safe);
+  }
+  .compare h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+  .compare .bad h5 { color: var(--warn); }
+  .compare .good h5 { color: var(--safe); }
+  .compare p { font-size: 14px; line-height: 1.5; margin-bottom: 0; }
+
+  /* Tabla */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+  tr:nth-child(even) td { background: var(--paper-2); }
+
+  /* Drop cap inicial de cada sección */
+  .has-dropcap > p:first-of-type::first-letter {
+    font-family: 'Fraunces', serif;
+    font-size: 76px;
+    line-height: 0.85;
+    float: left;
+    padding: 8px 12px 0 0;
+    color: var(--accent);
+    font-weight: 400;
+    font-variation-settings: "opsz" 144;
+  }
+
+  /* Glosario */
+  .gloss {
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 0;
+    margin: 16px 0;
+  }
+  .gloss dt {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--accent-2);
+    margin-bottom: 4px;
+  }
+  .gloss dd {
+    margin-bottom: 14px;
+    padding-left: 0;
+  }
+  .gloss dd:last-child { margin-bottom: 0; }
+
+  /* Diagrama de jerarquía */
+  .hierarchy {
+    background: var(--paper-2);
+    border: 1px solid var(--rule-strong);
+    padding: 28px;
+    margin: 28px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .hierarchy .h-1 { color: var(--accent); font-weight: 600; }
+  .hierarchy .h-2 { padding-left: 24px; color: var(--accent-2); }
+  .hierarchy .h-3 { padding-left: 48px; color: var(--ink); }
+  .hierarchy .h-comment { color: var(--muted); font-style: italic; }
+
+  /* Footer */
+  .footer-end {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 2px solid var(--ink);
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--muted);
+  }
+  .footer-end::before {
+    content: '✦  ✦  ✦';
+    display: block;
+    margin-bottom: 24px;
+    color: var(--accent);
+    font-style: normal;
+    letter-spacing: 1em;
+  }
+
+  /* Tabla anchor mejor para sticky nav vibe */
+  .anchor-marker {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+  }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 32px 20px; }
+    .compare { grid-template-columns: 1fr; }
+    h3 { font-size: 26px; }
+    body { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-meta">
+    <span>Manual interno · Onboarding</span>
+    <span>v1.0 — 2026</span>
+  </div>
+  <h1>Cómo trabajar con <em>Claude</em> sin perder el oficio</h1>
+  <p class="subtitle">Guía profunda para equipos de gestión de proyectos y desarrollo. De los conceptos que aplican a todo, a los detalles que solo importan en Chat, Cowork y Code.</p>
+  <span class="hero-tag">Nivel: 0 → 100</span>
+</header>
+
+<!-- ============ TOC ============ -->
+<nav class="toc">
+  <div class="toc-grid">
+    <div class="toc-section">
+      <h4>01 · Claude</h4>
+      <ul>
+        <li><a href="#que-es">Qué es y qué no es</a></li>
+        <li><a href="#modelos">Familia de modelos</a></li>
+        <li><a href="#contexto">Ventana de contexto</a></li>
+        <li><a href="#tokens">Tokens y coste</a></li>
+        <li><a href="#thinking">Extended Thinking</a></li>
+        <li><a href="#prompting">Prompting estructurado</a></li>
+        <li><a href="#xml">Etiquetas XML</a></li>
+        <li><a href="#few-shot">Few-shot y CoT</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#mcp">MCP y conectores</a></li>
+        <li><a href="#memoria">Memoria</a></li>
+        <li><a href="#seguridad">Seguridad y datos</a></li>
+        <li><a href="#mental">Modelos mentales</a></li>
+      </ul>
+    </div>
+    <div class="toc-section">
+      <h4>02 · Chat</h4>
+      <ul>
+        <li><a href="#chat-intro">Cuándo usar Chat</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#artifacts">Artifacts</a></li>
+        <li><a href="#styles">Styles</a></li>
+        <li><a href="#chat-search">Web search e investigación</a></li>
+        <li><a href="#chat-files">Archivos y análisis</a></li>
+        <li><a href="#chat-flujos">Flujos típicos PM</a></li>
+      </ul>
+    </div>
+    <div class="toc-section">
+      <h4>03 · Cowork</h4>
+      <ul>
+        <li><a href="#cowork-intro">Qué es Cowork</a></li>
+        <li><a href="#cowork-setup">Setup y permisos</a></li>
+        <li><a href="#cowork-tareas">Tareas multi-paso</a></li>
+        <li><a href="#cowork-plugins">Plugins e instrucciones</a></li>
+        <li><a href="#cowork-schedule">Tareas programadas</a></li>
+        <li><a href="#cowork-dispatch">Dispatch móvil</a></li>
+        <li><a href="#cowork-flujos">Flujos típicos PM</a></li>
+      </ul>
+    </div>
+    <div class="toc-section">
+      <h4>04 · Code</h4>
+      <ul>
+        <li><a href="#code-intro">Qué es Claude Code</a></li>
+        <li><a href="#code-install">Instalación</a></li>
+        <li><a href="#claude-md">CLAUDE.md</a></li>
+        <li><a href="#slash">Slash commands</a></li>
+        <li><a href="#subagents">Subagentes</a></li>
+        <li><a href="#hooks">Hooks</a></li>
+        <li><a href="#code-mcp">MCP en Code</a></li>
+        <li><a href="#code-flujos">Flujos típicos dev</a></li>
+        <li><a href="#code-pitfalls">Errores frecuentes</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ================================================== -->
+<!-- ============ 01 · CLAUDE ============ -->
+<!-- ================================================== -->
+<section class="section" id="claude">
+  <div class="section-header">
+    <span class="section-num">— 01 / 04 —</span>
+    <h2>El núcleo: <em>Claude</em></h2>
+    <p class="section-intro">Antes de aprender Chat, Cowork o Code, hay que entender qué es Claude por dentro. Lo que veas en esta sección aplica a las tres superficies. Si no asimilas esta parte, las otras tres serán cargo cult.</p>
+  </div>
+
+  <div class="has-dropcap">
+
+  <h3 id="que-es">Qué es Claude (y qué no es)</h3>
+  <p>Claude es un asistente de IA construido por <strong>Anthropic</strong>. Técnicamente es un LLM (Large Language Model): una red neuronal entrenada para predecir la siguiente palabra a partir de un contexto dado. Eso suena sencillo, pero a partir de esa mecánica básica emerge la capacidad de razonar, escribir código, analizar documentos, planificar tareas y ejecutar acciones en tu ordenador.</p>
+
+  <p>Lo que <strong>no</strong> es Claude:</p>
+  <ul>
+    <li><strong>No es un buscador.</strong> No tiene la verdad indexada. Tiene patrones aprendidos hasta una fecha de corte. Cuando necesita datos actuales, busca en la web (si tiene acceso).</li>
+    <li><strong>No es determinista.</strong> Dos ejecuciones del mismo prompt pueden dar resultados distintos. Si necesitas exactitud bit a bit, eso lo da el código, no el modelo.</li>
+    <li><strong>No es una persona.</strong> No tiene memoria propia entre sesiones a menos que lo configures explícitamente. No "recuerda lo que hablamos ayer" salvo que el sistema de memoria esté activo.</li>
+    <li><strong>No es infalible.</strong> Alucina. Inventa funciones que no existen, cita papers que no escribió nadie, atribuye frases mal. Tu trabajo es verificar.</li>
+  </ul>
+
+  <div class="simile">
+    Piensa en Claude como un consultor senior recién contratado, brillante y rápido, pero con dos rarezas: <strong>(1)</strong> empieza cada reunión sin acordarse de la anterior salvo que se la resumas, y <strong>(2)</strong> a veces, cuando no sabe algo, te lo cuenta con tanta seguridad que te lo crees. Tu trabajo no es darle órdenes simples, sino diseñar el contexto en el que va a trabajar.
+  </div>
+
+  <h3 id="modelos">La familia de modelos</h3>
+  <p>Anthropic mantiene tres modelos vivos en el mismo momento. Cada uno hace una jugada distinta entre <strong>velocidad, precio e inteligencia</strong>. Elegir bien es la primera optimización real.</p>
+
+  <table>
+    <thead>
+      <tr><th>Modelo</th><th>Para qué sirve</th><th>Velocidad</th><th>Coste relativo</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Haiku 4.5</strong></td>
+        <td>Tareas masivas y repetitivas, clasificación, extracción simple, respuestas rápidas, automatizaciones de bajo riesgo.</td>
+        <td>★★★★★</td>
+        <td>$</td>
+      </tr>
+      <tr>
+        <td><strong>Sonnet 4.6</strong></td>
+        <td>El "todoterreno". Coding profesional, redacción de calidad, análisis con criterio. Es el que usarás el 80% del tiempo.</td>
+        <td>★★★★</td>
+        <td>$$$</td>
+      </tr>
+      <tr>
+        <td><strong>Opus 4.7</strong></td>
+        <td>Razonamiento largo y complejo, agentes autónomos de larga duración, análisis multi-archivo crítico, decisiones donde la precisión importa más que el coste.</td>
+        <td>★★★</td>
+        <td>$$$$$</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="simile">
+    Tu equipo no manda al CTO a clasificar tickets de Jira. Tampoco resuelve una arquitectura de microservicios con un becario. Con los modelos pasa lo mismo. Haiku es el junior diligente; Sonnet es el senior; Opus es el principal architect que sólo sacas para lo que realmente lo necesita.
+  </div>
+
+  <div class="tip">
+    <strong>Regla práctica:</strong> empieza por Sonnet. Si la tarea es trivial y la estás haciendo en bucle (1.000 emails clasificados por urgencia), prueba Haiku. Si Sonnet te falla en algo crítico (un refactor grande o un análisis legal), sube a Opus. No empieces por Opus por defecto: gastarás 5x sin necesidad.
+  </div>
+
+  <h3 id="contexto">Ventana de contexto: el escritorio del modelo</h3>
+  <p>La <strong>ventana de contexto</strong> es la cantidad de texto que Claude puede tener "en mente" en una sola conversación. En los modelos actuales son aproximadamente <strong>1.000.000 de tokens</strong> (alrededor de 750.000 palabras: varias novelas enteras). Cuando se llena, se llena: la información más antigua deja de pesar.</p>
+
+  <div class="simile">
+    Imagina el escritorio de un trabajador. Por grande que sea, tiene un límite. Si llenas el escritorio de papeles, los importantes acaban tapados. Lo mismo pasa con el contexto: meter "todo por si acaso" no ayuda, perjudica. <strong>El arte está en poner sobre la mesa exactamente lo que se necesita para esta tarea, ni más ni menos.</strong>
+  </div>
+
+  <p>Implicaciones prácticas:</p>
+  <ul>
+    <li><strong>"Lost in the middle":</strong> el modelo presta más atención al principio y al final del contexto. Lo que pongas en el medio puede pesarle menos. Pon las instrucciones críticas al principio o al final.</li>
+    <li><strong>Conversaciones muy largas:</strong> después de 50-100 mensajes, conviene resumir y empezar un chat nuevo. Si no, gastas tokens en re-procesar todo el historial cada turno.</li>
+    <li><strong>Adjuntar PDFs gigantes:</strong> mejor extraer la sección relevante que pegar 300 páginas. La señal es más fuerte si la basura es menor.</li>
+  </ul>
+
+  <h3 id="tokens">Tokens y por qué importan económicamente</h3>
+  <p>Un <strong>token</strong> es la unidad de texto que el modelo "ve". No es exactamente una palabra: en castellano, un token equivale más o menos a <strong>0,7 palabras</strong>. La frase "Buenos días, Marta" son aproximadamente 5 tokens.</p>
+
+  <p>Hay dos tipos:</p>
+  <ul>
+    <li><strong>Tokens de entrada (input):</strong> todo lo que el modelo lee — tu prompt, el system prompt, los archivos, la conversación previa.</li>
+    <li><strong>Tokens de salida (output):</strong> lo que el modelo genera. Suelen ser entre 3 y 5 veces más caros que los de entrada.</li>
+  </ul>
+
+  <div class="example">
+    <h5>Cuenta rápida</h5>
+    <p>Subes un PDF de 50 páginas (~25.000 tokens) y pides a Sonnet 4.6 un resumen de 500 palabras (~700 tokens). Coste: 25.000 × $3/M + 700 × $15/M ≈ <strong>$0,086 por análisis</strong>. Si lo haces 1.000 veces al mes, son ~$86. Si lo hicieses con Opus: ~$430.</p>
+  </div>
+
+  <h4>Prompt caching: el truco que más ahorra</h4>
+  <p>Si vuelves a usar el mismo system prompt o los mismos documentos en muchas conversaciones, Anthropic los puede cachear. Pagas la primera vez completo y luego solo una fracción del coste. <strong>Hasta un 90% de descuento sobre los tokens cacheados.</strong> Es la diferencia entre un proyecto rentable y uno que no.</p>
+
+  <h3 id="thinking">Extended Thinking (pensamiento extendido)</h3>
+  <p>Por defecto, Claude responde directamente. Con <strong>Extended Thinking</strong> activado, el modelo "piensa" en privado antes de responder: explora alternativas, descarta hipótesis, revisa su propia lógica. Tú ves un breve resumen de ese razonamiento y luego la respuesta final.</p>
+
+  <div class="simile">
+    Es la diferencia entre preguntarle a un colega "¿qué te parece esta arquitectura?" en el pasillo, mientras pasa de camino al café, y darle una mañana entera con un café para que la analice. La mañana cuesta más, pero la respuesta es de otro orden.
+  </div>
+
+  <p><strong>Cuándo activarlo:</strong></p>
+  <ul>
+    <li>Análisis legal, financiero, médico — donde un error tiene coste alto.</li>
+    <li>Debugging complejo: el bug que llevas dos horas persiguiendo.</li>
+    <li>Diseño de arquitectura, decisiones técnicas con muchas variables.</li>
+    <li>Problemas de matemáticas, lógica o algoritmos no triviales.</li>
+  </ul>
+
+  <p><strong>Cuándo NO activarlo:</strong></p>
+  <ul>
+    <li>Redactar un email de seguimiento.</li>
+    <li>Reformular un párrafo.</li>
+    <li>Tareas creativas en las que la "primera intuición" suele funcionar mejor.</li>
+    <li>Preguntas factuales simples ("¿qué es un webhook?").</li>
+  </ul>
+
+  <p>En la API existe el modo <strong>adaptativo</strong>: el modelo decide solo cuándo encender el motor. Para uso diario en Chat, suele venir bien dejarlo en automático.</p>
+
+  <h3 id="prompting">Prompting estructurado: el músculo central</h3>
+  <p>Aquí es donde el 90% de los usuarios se quedan en lo trivial y donde tú vas a separarte del resto. Un buen prompt no es "más palabras"; es <strong>más estructura</strong>.</p>
+
+  <h4>Los seis principios</h4>
+  <ol>
+    <li><strong>Sé claro y directo.</strong> Trata a Claude como un nuevo empleado brillante pero sin contexto. No asumas nada que no hayas escrito.</li>
+    <li><strong>Da contexto.</strong> Quién eres, para quién es, qué se ha hecho antes, qué se ha intentado. Lo que parece "obvio" para ti no lo es para el modelo.</li>
+    <li><strong>Da ejemplos (few-shot).</strong> Mostrar 1-3 ejemplos de input/output deseado vale más que 500 palabras describiendo el formato.</li>
+    <li><strong>Pide razonamiento (chain-of-thought).</strong> "Piensa paso a paso antes de responder" mejora la precisión en tareas complejas.</li>
+    <li><strong>Estructura con XML.</strong> Separa instrucciones, datos, ejemplos y formato con etiquetas. (Ver siguiente sección.)</li>
+    <li><strong>Define el formato de salida.</strong> ¿JSON? ¿Markdown? ¿Una tabla? Pídelo explícitamente.</li>
+  </ol>
+
+  <div class="compare">
+    <div class="bad">
+      <h5>✗ Prompt débil</h5>
+      <p>"Resume este PDF y dime si es relevante para nuestro proyecto."</p>
+    </div>
+    <div class="good">
+      <h5>✓ Prompt fuerte</h5>
+      <p>"Eres analista en una empresa que gestiona proyectos de obra civil. Te paso una memoria técnica de 40 páginas. Quiero: (1) un resumen ejecutivo de 5 bullets, (2) los 3 principales riesgos identificados con su severidad alta/media/baja, (3) si menciona alguna normativa CTE relevante, citarla literalmente con el apartado. Devuélvelo en Markdown."</p>
+    </div>
+  </div>
+
+  <h3 id="xml">Etiquetas XML: tu mejor herramienta</h3>
+  <p>Claude está específicamente entrenado para reconocer estructura XML. Cuando un prompt mezcla varias cosas (instrucciones, datos del usuario, ejemplos, formato esperado), las etiquetas XML evitan que el modelo confunda unas con otras.</p>
+
+  <div class="simile">
+    Es como organizar una cocina industrial. Si todos los ingredientes están en el mismo cubo, el cocinero perderá tiempo separándolos y se equivocará. Si hay una bandeja para verdura, otra para proteína, otra para especias y otra para salsas, el flujo es limpio. Las etiquetas XML son las bandejas del prompt.
+  </div>
+
+  <div class="block-code" data-label="Prompt">
+<span class="c-tag">&lt;rol&gt;</span>
+Eres un Project Manager senior especializado en proyectos software con metodologías ágiles.
+<span class="c-tag">&lt;/rol&gt;</span>
+
+<span class="c-tag">&lt;tarea&gt;</span>
+Analiza el acta de reunión que te paso y devuelve un resumen ejecutivo + lista de acciones.
+<span class="c-tag">&lt;/tarea&gt;</span>
+
+<span class="c-tag">&lt;datos&gt;</span>
+{{aquí pego el acta literal}}
+<span class="c-tag">&lt;/datos&gt;</span>
+
+<span class="c-tag">&lt;formato_salida&gt;</span>
+- Resumen: 4 bullets máximo.
+- Acciones: tabla con columnas | Tarea | Responsable | Fecha límite | Bloqueante (sí/no) |
+- Riesgos: lista con severidad.
+<span class="c-tag">&lt;/formato_salida&gt;</span>
+
+<span class="c-tag">&lt;ejemplo&gt;</span>
+[un ejemplo de salida correcta de una reunión anterior]
+<span class="c-tag">&lt;/ejemplo&gt;</span>
+  </div>
+
+  <p>No hay "etiquetas oficiales" — usa nombres semánticos consistentes. Lo importante es que separe los componentes del prompt en cajas etiquetadas.</p>
+
+  <h3 id="few-shot">Few-shot prompting y Chain-of-Thought</h3>
+  <h4>Few-shot: enseñar con ejemplos</h4>
+  <p>"Few-shot" significa darle al modelo entre 1 y 5 ejemplos de input → output deseado. Es brutalmente más eficaz que describir el formato en palabras.</p>
+
+  <div class="example">
+    <h5>Clasificación de tickets</h5>
+    <p>En lugar de explicar las categorías, le das tres ejemplos:</p>
+    <div class="block-code" data-label="Few-shot">
+<span class="c-tag">&lt;ejemplos&gt;</span>
+Ticket: "El login no funciona en Safari" → BUG / Alta
+Ticket: "¿Podríais añadir export a Excel?" → FEATURE / Media
+Ticket: "Cobrasteis dos veces este mes" → BILLING / Crítica
+<span class="c-tag">&lt;/ejemplos&gt;</span>
+
+Clasifica el siguiente ticket en el mismo formato:
+<span class="c-tag">&lt;ticket&gt;</span>
+"La app va lenta desde el martes"
+<span class="c-tag">&lt;/ticket&gt;</span>
+    </div>
+  </div>
+
+  <h4>Chain-of-Thought: pedirle que piense en voz alta</h4>
+  <p>Para tareas que requieren razonamiento, añadir literalmente "piensa paso a paso antes de responder" mejora la calidad. Aún más si le indicas estructura:</p>
+
+  <div class="block-code" data-label="CoT estructurado">
+<span class="c-tag">&lt;instrucciones&gt;</span>
+Antes de dar la respuesta final:
+1. Lista las suposiciones que estás haciendo.
+2. Trabaja la solución paso a paso.
+3. Comprueba el resultado.
+4. Da la respuesta final dentro de <span class="c-tag">&lt;respuesta&gt;</span>.
+Tu razonamiento ponlo dentro de <span class="c-tag">&lt;pensamiento&gt;</span>.
+<span class="c-tag">&lt;/instrucciones&gt;</span>
+  </div>
+
+  <p>Esto te permite además parsear la respuesta: si Claude tiene que devolver JSON puro a una herramienta, le pides el razonamiento dentro de <code>&lt;thinking&gt;</code> y el JSON dentro de <code>&lt;answer&gt;</code>; tu código solo lee el segundo.</p>
+
+  <h3 id="skills">Skills: capacidades empaquetadas</h3>
+  <p>Una <strong>Skill</strong> es un paquete de instrucciones especializado que Claude carga automáticamente cuando detecta que es relevante. Estructuralmente es una carpeta con un fichero <code>SKILL.md</code> al que se pueden adjuntar scripts, plantillas y documentación.</p>
+
+  <div class="simile">
+    Si Claude es un consultor multidisciplinar, las Skills son los manuales de la estantería. No los lleva todos en la cabeza a la vez (gastaría memoria), pero cuando le preguntas algo concreto, va a la estantería, abre el manual correcto y trabaja con él.
+  </div>
+
+  <p>Anthropic publica Skills oficiales (PDF, DOCX, XLSX, PPTX, frontend-design, etc.) y tu empresa puede crear las suyas. Funcionan en Chat, Cowork y Code, lo que las convierte en la unidad reutilizable de conocimiento corporativo.</p>
+
+  <p><strong>Ejemplos de Skills útiles para una empresa de PM/dev:</strong></p>
+  <ul>
+    <li><code>guia-estilo-prosa</code> · cómo redactamos propuestas y emails en la empresa.</li>
+    <li><code>plantilla-acta-reunion</code> · la estructura exacta que usamos.</li>
+    <li><code>convenciones-codigo-python</code> · linting, naming, manejo de errores.</li>
+    <li><code>plantillas-jira</code> · cómo escribimos historias de usuario y tickets.</li>
+    <li><code>checklist-go-live</code> · pasos previos a poner una release en producción.</li>
+  </ul>
+
+  <h3 id="mcp">MCP (Model Context Protocol) y conectores</h3>
+  <p>MCP es un protocolo abierto que permite a Claude <strong>conectarse a herramientas externas</strong>: Google Drive, Gmail, Slack, Notion, Jira, GitHub, bases de datos, APIs internas. Sin MCP, Claude solo ve lo que pegas en el chat. Con MCP, ve tu sistema.</p>
+
+  <div class="simile">
+    Sin MCP, Claude es un experto al que le mandas fotocopias por correo. Con MCP, le das una llave de acceso a la oficina: puede entrar al archivador, abrir el calendario, leer el chat del equipo, sacar el documento que necesita y devolverlo a su sitio. La diferencia de productividad es la que hay entre un asesor remoto y un compañero de oficina.
+  </div>
+
+  <p><strong>Conectores típicos para tu rol:</strong></p>
+  <ul>
+    <li><strong>Google Drive / Notion:</strong> Claude lee tus documentos directamente, sin subirlos manualmente.</li>
+    <li><strong>Jira / Linear / Asana:</strong> consulta y crea tickets desde el chat.</li>
+    <li><strong>GitHub / GitLab:</strong> revisa PRs, abre issues, lee código del repo.</li>
+    <li><strong>Slack:</strong> resume canales, busca conversaciones.</li>
+    <li><strong>Gmail / Outlook:</strong> redacta respuestas con contexto del hilo.</li>
+  </ul>
+
+  <div class="alert">
+    <strong>Cuidado con los permisos.</strong> Activar un MCP da acceso real a Claude. Antes de conectar Gmail con permiso de envío, asegúrate de entender el alcance. Para empezar, permite solo lectura.
+  </div>
+
+  <h3 id="memoria">Memoria: lo que Claude recuerda entre conversaciones</h3>
+  <p>Por defecto, cada conversación es una hoja en blanco. La <strong>memoria</strong>, cuando está activada, hace que Claude recuerde entre sesiones cosas como tu nombre, el rol que tienes, las preferencias de estilo, los proyectos en curso.</p>
+
+  <p>Hay tres conceptos parecidos pero distintos que conviene no confundir:</p>
+
+  <dl class="gloss">
+    <dt>Memoria de usuario</dt>
+    <dd>Hechos persistentes ("trabajo en una empresa de PM y dev", "prefiero respuestas concisas en castellano"). Se guardan automáticamente o tú los marcas. Aplican en todos tus chats.</dd>
+    <dt>Project knowledge</dt>
+    <dd>Documentos e instrucciones que viven dentro de un Project específico. Solo aplican a ese proyecto.</dd>
+    <dt>Conversation history</dt>
+    <dd>El historial de la conversación actual. Vive solo dentro de ese chat.</dd>
+  </dl>
+
+  <p>Existe el modo <strong>Incógnito</strong> para conversaciones que no deben quedar registradas en memoria ni historial. Úsalo cuando trabajes con datos sensibles o ideas que aún no quieres consolidar.</p>
+
+  <h3 id="seguridad">Seguridad, privacidad y datos</h3>
+  <ul>
+    <li><strong>Plan personal (Pro/Max):</strong> Anthropic, por defecto, no entrena con tus datos. Pero conviene leer los términos vigentes.</li>
+    <li><strong>Plan Team / Enterprise:</strong> los datos están aislados, no se usan para entrenar, hay SSO, controles administrativos, retención configurable.</li>
+    <li><strong>Datos sensibles:</strong> nunca pegues credenciales, claves API, datos médicos personales o información financiera de clientes en chats no aprobados por la empresa.</li>
+    <li><strong>Inyección de prompt:</strong> si Claude lee un documento o web externa, esos contenidos pueden incluir instrucciones maliciosas. Trata todo input externo como no confiable.</li>
+  </ul>
+
+  <h3 id="mental">Modelos mentales para trabajar mejor</h3>
+
+  <h4>1. El "compañero júnior brillante"</h4>
+  <p>Trata a Claude como a un compañero recién incorporado: muy capaz, sin contexto. Si necesitas que sepa algo, escríbelo. Si necesitas que use una plantilla, dásela. Lo que no escribas, no existe.</p>
+
+  <h4>2. El bucle "borrador → crítica → mejora"</h4>
+  <p>No le pidas el resultado perfecto a la primera. Pídele un borrador. Después pídele que critique su propio borrador como lo haría un revisor exigente. Después que lo mejore con esa crítica. Es 3 prompts, pero el resultado salta de nivel.</p>
+
+  <h4>3. "Plan first, execute later"</h4>
+  <p>En tareas complejas, pide primero el plan. "Antes de tocar código, dime qué archivos vas a modificar y qué cambios harás en cada uno." Validas el plan, ahorras horas de trabajo en la dirección equivocada.</p>
+
+  <h4>4. La regla del "context, not commands"</h4>
+  <p>Mejor que decirle <em>cómo</em> hacer algo, dile <em>por qué</em> hay que hacerlo. Con el porqué, encuentra el cómo solo. Con solo el cómo, no se adapta cuando algo cambia.</p>
+
+  </div>
+</section>
+
+<!-- ================================================== -->
+<!-- ============ 02 · CHAT ============ -->
+<!-- ================================================== -->
+<section class="section" id="chat">
+  <div class="section-header">
+    <span class="section-num">— 02 / 04 —</span>
+    <h2>La superficie diaria: <em>Chat</em></h2>
+    <p class="section-intro">El interfaz que más vas a usar. Aquí pides cosas, redactas, analizas, investigas. Claude no toca tus archivos directamente: tú le das, él te devuelve. Conversacional, rápido, con artifacts y projects para que no sea desechable.</p>
+  </div>
+
+  <div class="has-dropcap">
+
+  <h3 id="chat-intro">Cuándo usar Chat (y cuándo no)</h3>
+  <p>Chat es para todo lo que se resuelve <strong>en una conversación</strong>: redactar, analizar, traducir, investigar, planificar, debuggear pegando un trozo de código. Si la tarea requiere que Claude toque tus archivos del disco duro, organice carpetas, ejecute scripts en tu máquina o trabaje horas de forma autónoma, eso es <strong>Cowork</strong>. Si es una sesión larga sobre un repositorio de código, eso es <strong>Code</strong>.</p>
+
+  <table>
+    <thead>
+      <tr><th>Tarea</th><th>Mejor en…</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Redactar un email a un cliente difícil</td><td>Chat</td></tr>
+      <tr><td>Resumir 50 páginas de PDF que pegas</td><td>Chat</td></tr>
+      <tr><td>Reorganizar una carpeta caótica de Downloads</td><td>Cowork</td></tr>
+      <tr><td>Generar un acta a partir de notas y subirla a Drive</td><td>Cowork</td></tr>
+      <tr><td>Refactorizar 12 archivos de un repo</td><td>Code</td></tr>
+      <tr><td>Explicar por qué un test falla, viendo el snippet</td><td>Chat</td></tr>
+      <tr><td>Analizar un Excel pegado y hacer un gráfico</td><td>Chat (con Artifacts)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="projects">Projects: contexto persistente</h3>
+  <p>Un <strong>Project</strong> es un espacio de trabajo donde guardas <strong>(a)</strong> instrucciones permanentes (system prompt) y <strong>(b)</strong> archivos de referencia (project knowledge). Todas las conversaciones que abras dentro del Project arrancan con ese contexto cargado.</p>
+
+  <div class="simile">
+    Imagina la diferencia entre dos consultorías. En la primera, cada vez que entras te recibe alguien distinto y le tienes que contar tu vida desde el principio. En la segunda, hay un despacho con tu nombre, tus carpetas, las notas de las reuniones anteriores, y el consultor entra ya leído. Un Project es ese segundo despacho.
+  </div>
+
+  <h4>Anatomía de un Project bien montado</h4>
+  <ol>
+    <li><strong>Instrucciones del proyecto (system prompt):</strong> rol, contexto, tono, restricciones, formato preferido. Es lo primero que ve Claude en cada chat.</li>
+    <li><strong>Project knowledge:</strong> documentos PDF, .docx, .md o texto pegado. Documentación de producto, guías de estilo, plantillas, base de datos de FAQ, glosario interno.</li>
+    <li><strong>Conversaciones:</strong> cada chat dentro del Project hereda lo anterior, pero las conversaciones entre sí son independientes.</li>
+  </ol>
+
+  <h4>Plantilla recomendada para system prompt de Project</h4>
+  <div class="block-code" data-label="System prompt">
+<span class="c-tag">&lt;rol&gt;</span>
+Eres asistente del equipo de [PM / Backend / Frontend] en [Empresa].
+Tu trabajo es [redactar entregables, debuggear, planificar sprints, etc.].
+<span class="c-tag">&lt;/rol&gt;</span>
+
+<span class="c-tag">&lt;contexto_empresa&gt;</span>
+Somos una empresa que gestiona proyectos software para clientes B2B.
+Stack principal: Python/FastAPI, React, PostgreSQL, AWS.
+Metodología: Scrum con sprints de 2 semanas.
+Tono cliente: profesional, directo, sin jerga innecesaria.
+<span class="c-tag">&lt;/contexto_empresa&gt;</span>
+
+<span class="c-tag">&lt;preferencias&gt;</span>
+- Responde en castellano salvo que el contenido técnico requiera inglés.
+- Cuando generes código, incluye comentarios solo si aclaran intención no obvia.
+- Si te falta información clave, pregúntala antes de inventar.
+- Si das una recomendación, justifícala con uno o dos motivos.
+<span class="c-tag">&lt;/preferencias&gt;</span>
+
+<span class="c-tag">&lt;archivos_referencia&gt;</span>
+- "guia-estilo.md": cómo redactamos hacia clientes.
+- "convenciones.md": estándares de código del equipo.
+- "plantilla-acta.md": estructura estándar de actas.
+<span class="c-tag">&lt;/archivos_referencia&gt;</span>
+  </div>
+
+  <h4>Cuándo crear un Project</h4>
+  <ul>
+    <li>Trabajas con un cliente recurrente (un Project por cliente).</li>
+    <li>Tienes un rol estable (un Project "Daily PM", otro "Daily Backend").</li>
+    <li>Una iniciativa concreta: migración de stack, lanzamiento de un producto.</li>
+    <li>Una base de conocimiento compartida del equipo: onboarding, FAQ, plantillas.</li>
+  </ul>
+
+  <div class="alert">
+    Anti-patrón habitual: <strong>el Project basurero</strong>. Meter de todo "por si acaso". Acaba siendo un cajón con 40 archivos y Claude pierde foco. Si un Project crece demasiado, divídelo. La regla: un Project, un propósito claro.
+  </div>
+
+  <h3 id="artifacts">Artifacts: el lienzo paralelo</h3>
+  <p>Un <strong>Artifact</strong> es contenido sustancial que Claude genera en un panel separado a la derecha del chat: un documento Markdown, código React, un SVG, un mockup HTML, una tabla, un diagrama. Lo importante: <strong>se actualiza in situ</strong>, no se reescribe entero cada vez. Puedes iterar sobre él pidiendo cambios.</p>
+
+  <div class="simile">
+    Es la diferencia entre dictarle al becario una propuesta por teléfono y trabajar con él delante de la pizarra. La pizarra es el Artifact: ves lo que está construyendo, le señalas qué cambiar, lo modifica delante tuyo.
+  </div>
+
+  <p><strong>Tipos comunes de Artifact:</strong></p>
+  <ul>
+    <li><strong>Documentos largos:</strong> propuestas, especificaciones, informes.</li>
+    <li><strong>Código React/HTML:</strong> componentes interactivos, mockups funcionales, mini-apps.</li>
+    <li><strong>SVG / diagramas:</strong> arquitecturas, flujos, gráficos.</li>
+    <li><strong>Tablas y datos:</strong> CSV-like estructurado.</li>
+    <li><strong>Live Artifacts:</strong> dashboards y trackers que se actualizan con datos reales cada vez que los abres.</li>
+  </ul>
+
+  <div class="example">
+    <h5>Caso real: prototipo de dashboard</h5>
+    <p>"Quiero un dashboard simple en React que muestre 4 KPIs de un sprint: velocity, bugs abiertos, % completado y burn-down. Los datos los meto yo a mano por ahora. Estilo limpio, profesional, no marketing."</p>
+    <p>Resultado: un Artifact React funcional, navegable, que puedes seguir iterando con "ahora añade un toggle dark mode" o "el burn-down quiero que sea Recharts en lugar de canvas".</p>
+  </div>
+
+  <h3 id="styles">Styles: voz y tono consistentes</h3>
+  <p>Los <strong>Styles</strong> son perfiles de tono y formato que aplicas a una conversación. Anthropic trae algunos por defecto (Formal, Conciso, Explicativo) y puedes crear los tuyos a partir de ejemplos de tu propia escritura.</p>
+
+  <p><strong>Cuándo te interesa:</strong></p>
+  <ul>
+    <li>Escribir comunicaciones a cliente con la voz de la empresa.</li>
+    <li>Documentación interna que sigue una guía de estilo concreta.</li>
+    <li>Posts de LinkedIn o newsletters con tu voz personal.</li>
+  </ul>
+
+  <p>El procedimiento ideal para un Style corporativo: pega 5-10 ejemplos de textos bien escritos del equipo, pídele a Claude que destile patrones (frases, longitud media, palabras prohibidas, tics), y conviertes esa destilación en un Style.</p>
+
+  <h3 id="chat-search">Web search e investigación</h3>
+  <p>Claude puede buscar en la web cuando le falta información reciente o cuando el usuario lo pide explícitamente. Lo hace de forma agéntica: lanza varias búsquedas, lee los resultados, los cita.</p>
+
+  <div class="tip">
+    <strong>Buenas prácticas:</strong>
+    <ul>
+      <li>Para preguntas factuales que cambian con el tiempo (precios, leyes, releases), pide explícitamente que verifique en la web.</li>
+      <li>Para investigación profunda, usa el modo <strong>Research</strong>: Claude planifica, busca en muchas fuentes y devuelve un informe estructurado con citas. Tarda más, pero la calidad es otra liga.</li>
+      <li>Pídele que cite siempre las fuentes. Si no cita, sospecha.</li>
+    </ul>
+  </div>
+
+  <h3 id="chat-files">Archivos y análisis de datos</h3>
+  <p>Puedes adjuntar PDFs, imágenes, Word, Excel, CSV, código. Claude lee texto e imágenes nativamente. Para Excel y CSV, además del análisis textual, puede ejecutar Python en un sandbox y devolverte gráficos, transformaciones y tablas pivotadas.</p>
+
+  <p><strong>Casos de uso típicos:</strong></p>
+  <ul>
+    <li>"Aquí tienes el export de horas de Toggl. Dame las desviaciones por proyecto y el top 3 de tareas que más se desviaron."</li>
+    <li>"Adjunto un PDF con 80 páginas de RFP de un cliente. Sácame los requisitos funcionales en una tabla."</li>
+    <li>"Esta captura de pantalla muestra un error en producción. ¿Qué crees que pasa?"</li>
+  </ul>
+
+  <h3 id="chat-flujos">Flujos típicos para PM y desarrolladores</h3>
+
+  <h4>Flujo 1 · Acta de reunión a partir de notas</h4>
+  <ol>
+    <li>Pegas tus notas crudas (post-it, transcripción, lo que sea).</li>
+    <li>Project tiene la plantilla de acta como referencia.</li>
+    <li>Pides: "Convierte esto en acta siguiendo nuestra plantilla. Si hay decisiones poco claras, márcalas con [REVISAR]."</li>
+    <li>Claude devuelve un Artifact con el acta.</li>
+    <li>Iteras: "Las acciones de Marta agrúpalas. La de seguridad sube a prioridad alta."</li>
+  </ol>
+
+  <h4>Flujo 2 · Análisis de propuesta de cliente</h4>
+  <ol>
+    <li>Subes el RFP / pliego (PDF largo).</li>
+    <li>Pides: "Sácame: (1) requisitos funcionales numerados, (2) requisitos no funcionales, (3) riesgos que veas, (4) puntos donde el pliego es ambiguo y necesitamos preguntar."</li>
+    <li>Sigues con: "De los riesgos, ¿cuáles son bandera roja para no presentarse?"</li>
+  </ol>
+
+  <h4>Flujo 3 · Debugging conversacional</h4>
+  <ol>
+    <li>Pegas el snippet con bug, el stack trace, lo que esperas que pase.</li>
+    <li>Pides: "Antes de proponer fix, dime qué crees que está pasando paso a paso."</li>
+    <li>Una vez confirmas que entiende, pides el fix.</li>
+    <li>Pides que escriba un test que cubra ese caso para el futuro.</li>
+  </ol>
+
+  <h4>Flujo 4 · Generación de tickets para sprint</h4>
+  <ol>
+    <li>Pegas las notas de la planning o un epic.</li>
+    <li>Pides: "Descompón esto en historias de usuario tamaño S/M (8 puntos máximo cada una). Formato: Como [rol], quiero [acción], para [valor]. Incluye criterios de aceptación en bullets."</li>
+    <li>Project tiene el formato exacto que usáis en Jira como referencia.</li>
+  </ol>
+
+  </div>
+</section>
+
+<!-- ================================================== -->
+<!-- ============ 03 · COWORK ============ -->
+<!-- ================================================== -->
+<section class="section" id="cowork">
+  <div class="section-header">
+    <span class="section-num">— 03 / 04 —</span>
+    <h2>El compañero autónomo: <em>Cowork</em></h2>
+    <p class="section-intro">Cowork no responde mensajes: ejecuta tareas. Le das acceso a una carpeta, le describes el resultado que quieres, y se va a trabajar mientras tú haces otra cosa. Es Claude Code para todo lo que no es código.</p>
+  </div>
+
+  <div class="has-dropcap">
+
+  <h3 id="cowork-intro">Qué es Cowork</h3>
+  <p>Cowork es un modo del Claude Desktop (Mac y Windows) que le da a Claude <strong>acceso real a tu sistema de archivos</strong> dentro de una carpeta que tú apruebas. En lugar de responder mensaje a mensaje, planifica una tarea, la divide en pasos, los ejecuta, y te avisa cuando termina o cuando necesita que decidas algo.</p>
+
+  <div class="simile">
+    Si Chat es una conversación con un consultor por videollamada, Cowork es ese mismo consultor sentado en una mesa de tu oficina, con un escritorio asignado y permiso para abrir el archivador. Le dices "quiero estos 80 PDFs ordenados por cliente con un índice maestro al final". Te vas a comer. Vuelves y está listo.
+  </div>
+
+  <p><strong>La arquitectura es la misma de Claude Code, pero envuelta en una interfaz gráfica</strong> para que no haga falta terminal. Puede leer, editar y crear archivos; navegar por la web cuando necesita información; usar conectores MCP; lanzar subagentes en paralelo cuando una tarea es compleja.</p>
+
+  <h3 id="cowork-setup">Setup y permisos</h3>
+  <ol>
+    <li><strong>Descarga Claude Desktop</strong> desde <code>claude.com/download</code>. Disponible en Mac y Windows.</li>
+    <li>Necesitas plan <strong>Pro, Max, Team o Enterprise</strong>. No está en el plan gratuito.</li>
+    <li>Abre la app, arriba verás tres pestañas: <strong>Chat / Cowork / Code</strong>. Click en Cowork.</li>
+    <li>Click en "Work in a folder" y selecciona la carpeta. <strong>Empieza con una carpeta sandbox</strong> antes de darle acceso a algo crítico.</li>
+    <li>Aprueba los permisos: lectura, edición, creación. La eliminación pide confirmación explícita cada vez.</li>
+  </ol>
+
+  <div class="alert">
+    <strong>El permiso de carpeta es la línea de seguridad.</strong> Lo que está fuera de la carpeta seleccionada, Cowork no lo ve. Lo que está dentro, lo puede tocar todo. Por eso: nunca selecciones la raíz de tu disco. Crea una carpeta de trabajo específica.
+  </div>
+
+  <h3 id="cowork-tareas">Cómo se le pide a Cowork: tareas multi-paso</h3>
+  <p>El cambio de mentalidad respecto a Chat es importante. En Chat le pides una respuesta. En Cowork le pides un <strong>resultado</strong>: el conjunto de archivos, organización o estado que esperas al final. Cómo llegar es decisión suya (aunque puedes guiarlo).</p>
+
+  <div class="compare">
+    <div class="bad">
+      <h5>✗ Petición tipo Chat</h5>
+      <p>"¿Cómo organizarías esta carpeta de Downloads?"</p>
+    </div>
+    <div class="good">
+      <h5>✓ Petición tipo Cowork</h5>
+      <p>"Organiza esta carpeta. Crea subcarpetas por tipo (Documents, Images, Spreadsheets, PDFs, Code, Other). Mueve cada archivo. Renombra los que tengan nombres genéricos como 'Screenshot…' a algo descriptivo basado en su contenido. Marca duplicados con [DUP] al principio del nombre. Al final, dame un resumen."</p>
+    </div>
+  </div>
+
+  <h4>Pídele el plan antes de ejecutar</h4>
+  <p>Para tareas con riesgo (mover muchos archivos, generar muchos documentos), añade siempre: <strong>"Muéstrame el plan antes de hacer cambios. Espera a que lo apruebe."</strong> Cowork te lista los pasos, tú revisas, das luz verde. Esto evita catástrofes.</p>
+
+  <div class="tip">
+    Cowork es bastante más caro en consumo que Chat (usa unas 20× más cómputo por sesión). Conviene <strong>agrupar trabajo</strong>: en lugar de mil sesiones cortas, una sesión larga con varias subtareas relacionadas.
+  </div>
+
+  <h3 id="cowork-plugins">Plugins, instrucciones globales y de carpeta</h3>
+
+  <h4>Instrucciones globales</h4>
+  <p>En <em>Settings &gt; Cowork &gt; Global instructions</em> defines preferencias permanentes que aplican a todas tus tareas: idioma, tono, estilo de salida, archivos que nunca debe tocar.</p>
+
+  <h4>Instrucciones por carpeta</h4>
+  <p>Cuando trabajas en una carpeta concreta, puedes añadir instrucciones específicas que solo aplican ahí: convenciones de nomenclatura del proyecto, formato de los entregables que usa ese cliente, el estilo de redacción.</p>
+
+  <h4>Plugins</h4>
+  <p>Un <strong>plugin</strong> en Cowork es un paquete que combina <strong>skills + conectores + subagentes</strong> para una función concreta (ventas, legal, finanzas, marketing, soporte, RRHH). Anthropic publica plugins oficiales y existe un marketplace en <code>claude.com/plugins</code>.</p>
+
+  <div class="example">
+    <h5>Plugin a medida: "PM Operations"</h5>
+    <p>Imagina que para tu rol creas un plugin que junta: skills de "redactar acta" + "generar status report" + "crear tickets Jira" + conector a Notion + conector a Jira + subagente de "research cliente". Lo activas y Cowork ya está especializado en lo tuyo desde el primer prompt, sin tener que repetir instrucciones cada vez.</p>
+  </div>
+
+  <p>Los plugins son archivos Markdown y JSON. No requieren código ni infraestructura. Puedes crear uno con el comando <code>Plugin Create</code> describiendo en una frase qué quieres que haga, o partiendo de una plantilla y modificándola.</p>
+
+  <h3 id="cowork-schedule">Tareas programadas</h3>
+  <p>Cowork puede ejecutar tareas en bucle. Comando: <code>/schedule</code> dentro de una tarea. Útil para:</p>
+  <ul>
+    <li><strong>Briefing diario:</strong> "Cada día a las 8:30, lee mis emails de cliente y hazme un resumen con prioridades."</li>
+    <li><strong>Status report semanal:</strong> "Cada viernes a las 17h, revisa el tablero de Jira y genera el informe semanal del sprint."</li>
+    <li><strong>Procesado de archivos:</strong> "Cada vez que aparezca un PDF nuevo en /facturas, extrae los datos y añádelos a la hoja de cálculo."</li>
+  </ul>
+
+  <div class="alert">
+    Las tareas programadas solo corren <strong>cuando tu ordenador está encendido y la app abierta</strong>. No es un servicio cloud. Si apagas el portátil un viernes, el informe del viernes no se hace.
+  </div>
+
+  <h3 id="cowork-dispatch">Dispatch: control desde el móvil</h3>
+  <p><strong>Dispatch</strong> empareja la app móvil de Claude con tu Cowork de escritorio. Mandas una tarea desde el móvil, se ejecuta en tu ordenador, y recibes el resultado en el móvil cuando termina.</p>
+
+  <p><strong>Caso real:</strong> estás en un cliente. Te pasan un Excel por mail. Desde el móvil le dices a Claude: "Saca los datos de este Excel a la base de datos de proyectos del Drive y mándame un resumen de las desviaciones." Tu ordenador en la oficina lo procesa. Llegas a casa con el trabajo hecho.</p>
+
+  <p><strong>Setup:</strong> Cowork → Dispatch → escanear QR con la app móvil. Las dos quedan emparejadas en una conversación persistente.</p>
+
+  <h3 id="cowork-flujos">Flujos típicos para tu rol</h3>
+
+  <h4>Flujo 1 · Onboarding de cliente nuevo</h4>
+  <p>Cliente nuevo. Te pasan 30 archivos: contrato, requisitos, reuniones de discovery, mockups, accesos. Tarea Cowork:</p>
+  <div class="block-code" data-label="Prompt">
+Carpeta: /clientes/cliente-nuevo
+
+Tarea:
+1. Organiza estos archivos en subcarpetas: 01-Contrato, 02-Requisitos, 03-Diseño, 04-Reuniones, 05-Accesos.
+2. Renombra cada archivo con formato YYYY-MM-DD_descripcion.ext.
+3. Crea un README.md en la raíz con:
+   - Resumen del cliente (nombre, sector, persona de contacto)
+   - Objetivos del proyecto (extraídos del contrato y discovery)
+   - Lista de stakeholders identificados
+   - Riesgos detectados en discovery
+4. Crea un /pendientes.md con las acciones que veas.
+Antes de mover nada, muéstrame el plan.
+  </div>
+
+  <h4>Flujo 2 · Status report semanal automatizado</h4>
+  <p>Cada viernes a las 16:00, Cowork:</p>
+  <ol>
+    <li>Lee el tablero de Jira (vía conector MCP) y extrae estado del sprint.</li>
+    <li>Lee la carpeta de actas de la semana en Drive.</li>
+    <li>Genera un informe en Markdown con: resumen ejecutivo, KPIs del sprint, decisiones tomadas, riesgos, próximos pasos.</li>
+    <li>Lo guarda en <code>/clientes/X/reports/YYYY-WW.md</code>.</li>
+    <li>Te lo manda al móvil vía Dispatch para que lo revises.</li>
+  </ol>
+
+  <h4>Flujo 3 · Investigación de mercado</h4>
+  <div class="block-code" data-label="Prompt">
+Lee el brief del proyecto en /brief.docx.
+Investiga en la web: tendencias actuales del sector, 5 competidores 
+relevantes, regulaciones aplicables.
+Crea:
+- /investigacion/tendencias.md
+- /investigacion/competidores.xlsx (con columnas: nombre, propuesta, 
+  pricing, fortalezas, debilidades)
+- /investigacion/regulacion.md
+- /investigacion/sintesis.md (resumen ejecutivo de 2 páginas)
+Si encuentras información contradictoria, marca con [VERIFICAR].
+  </div>
+
+  <h4>Flujo 4 · Limpieza de exports legacy</h4>
+  <p>Cliente te pasa un CSV de 50.000 líneas con datos sucios. Cowork:</p>
+  <ol>
+    <li>Quita duplicados.</li>
+    <li>Estandariza teléfonos a formato internacional.</li>
+    <li>Corrige códigos postales inválidos (busca patrones).</li>
+    <li>Detecta filas con campos críticos vacíos.</li>
+    <li>Genera un informe de calidad de datos en Markdown.</li>
+    <li>Devuelve un CSV limpio + un CSV de "casos a revisar manualmente".</li>
+  </ol>
+
+  </div>
+</section>
+
+<!-- ================================================== -->
+<!-- ============ 04 · CODE ============ -->
+<!-- ================================================== -->
+<section class="section" id="code">
+  <div class="section-header">
+    <span class="section-num">— 04 / 04 —</span>
+    <h2>El terminal pensante: <em>Code</em></h2>
+    <p class="section-intro">Claude Code es Claude con manos: lee tu repo, edita archivos, ejecuta tests, hace commits, abre PRs. Vive en tu terminal o integrado en tu IDE. Es la herramienta más potente del ecosistema y la que mejor se vuelve si la configuras bien.</p>
+  </div>
+
+  <div class="has-dropcap">
+
+  <h3 id="code-intro">Qué es Claude Code</h3>
+  <p>Claude Code es una <strong>CLI agéntica</strong>: un programa de línea de comandos donde tienes una conversación con Claude que tiene permiso para ver y modificar tu repositorio. No es un autocompletado tipo Copilot — es más cercano a darle al modelo el rol de "ingeniero junior con acceso a tu proyecto".</p>
+
+  <div class="simile">
+    Copilot es el GPS que te sugiere "gira a la derecha". Claude Code es el copiloto que coge el volante: planifica la ruta, conduce, para a echar gasolina, te pregunta si tomas la nacional o la autopista, y al llegar te resume el viaje. La supervisión sigue siendo tuya, pero el trabajo manual lo hace él.
+  </div>
+
+  <p>Ejecutándose en terminal, IDEs (VS Code, JetBrains), o desde el Claude Desktop. Hace mucho más que escribir código:</p>
+  <ul>
+    <li>Lee y entiende bases de código enteras.</li>
+    <li>Escribe, edita y ejecuta tests.</li>
+    <li>Maneja Git: branches, commits, PRs, conflictos.</li>
+    <li>Refactoriza a través de múltiples archivos.</li>
+    <li>Debugea problemas reales corriendo el código.</li>
+    <li>Genera documentación a partir del código real.</li>
+  </ul>
+
+  <h3 id="code-install">Instalación y primeros pasos</h3>
+  <div class="block-code" data-label="bash">
+<span class="c-com"># Instalación recomendada (binario nativo)</span>
+curl -fsSL https://claude.ai/install.sh | bash
+
+<span class="c-com"># Alternativa: Homebrew en Mac</span>
+brew install --cask claude-code
+
+<span class="c-com"># Login</span>
+claude auth login
+
+<span class="c-com"># Lanzar en el repo actual</span>
+cd ~/proyectos/mi-repo
+claude
+  </div>
+
+  <p>Una vez dentro, hablas en lenguaje natural. Claude Code lee los archivos que necesita (te lo dice antes), ejecuta comandos cuando hace falta (te pide permiso), y te muestra los cambios antes de aplicarlos.</p>
+
+  <h4>Comandos básicos que tienes que conocer</h4>
+  <ul>
+    <li><code>/clear</code> — limpia la conversación. <strong>Úsalo a menudo.</strong> Cada tarea nueva merece contexto limpio.</li>
+    <li><code>/compact</code> — resume la conversación actual cuando se está alargando, manteniendo el sentido.</li>
+    <li><code>claude --resume</code> — retoma una sesión anterior.</li>
+    <li><code>claude --continue</code> — continúa la última sesión.</li>
+    <li><code>@archivo.py</code> — fuerza que ese archivo entre en el contexto.</li>
+  </ul>
+
+  <h3 id="claude-md">CLAUDE.md: la constitución del repo</h3>
+  <p>El archivo <strong>CLAUDE.md</strong> en la raíz de tu repo es <strong>lo más importante</strong> de toda la configuración. Claude Code lo lee al inicio de cada sesión. Es donde defines las reglas, las convenciones y el contexto que tu proyecto exige.</p>
+
+  <div class="simile">
+    Si tu repo fuese una empresa, CLAUDE.md es el manual de bienvenida que le das a un developer nuevo el primer día. Contiene "así hacemos las cosas aquí". Sin él, cada sesión empieza desde cero y Claude se inventa convenciones. Con él, llega ya alineado.
+  </div>
+
+  <h4>Qué meter en un CLAUDE.md (y qué NO)</h4>
+  <p><strong>SÍ:</strong> convenciones que rara vez cambian — comandos de build, test y lint; reglas de naming; arquitectura; flujo de Git; "no commitees sin que apruebe yo"; "siempre escribe tests primero".</p>
+  <p><strong>NO:</strong> contexto efímero ("estoy trabajando en el bug X"), información de un sprint concreto, datos sensibles, prosa larga sobre filosofía. Si algo cambia con frecuencia, ponlo en otro sitio (instrucciones de Project, slash command, skill).</p>
+
+  <h4>Plantilla recomendada</h4>
+  <div class="block-code" data-label="CLAUDE.md">
+<span class="c-key"># Proyecto: PM Suite</span>
+
+<span class="c-key">## Stack</span>
+- Backend: Python 3.12 + FastAPI + SQLAlchemy
+- Frontend: React 18 + TypeScript + TanStack Query
+- DB: PostgreSQL 15
+- Tests: pytest (backend), Vitest + Playwright (frontend)
+
+<span class="c-key">## Comandos</span>
+- Build: `make build`
+- Dev: `make dev`
+- Tests backend: `make test-be`
+- Tests frontend: `make test-fe`
+- Lint: `make lint` (corre antes de cualquier commit)
+
+<span class="c-key">## Convenciones</span>
+- Python: type hints obligatorios, docstrings Google-style.
+- Sin default exports en TS.
+- Commits: feat/fix/chore/docs(scope): description (Conventional Commits).
+- Branches: feature/X, fix/X, chore/X. PR a `develop`.
+- Tests primero. PR sin tests = no merge.
+
+<span class="c-key">## Arquitectura</span>
+- Carpetas por dominio (no por tipo): `/users`, `/projects`, `/billing`.
+- Cada dominio: `routes.py`, `service.py`, `repository.py`, `models.py`.
+- No tocar `service.py` desde `routes.py` saltándose `repository.py`.
+
+<span class="c-key">## Reglas de comportamiento para Claude</span>
+- Antes de tocar código: lee la estructura y pregúntame si dudas.
+- Antes de commitear: corre lint y tests, repórtame el resultado.
+- Si encuentras un bug fuera del scope, anótalo en TODO.md, no lo arregles.
+- No instales dependencias nuevas sin preguntar.
+  </div>
+
+  <div class="tip">
+    Mantén CLAUDE.md por debajo de <strong>20-25 KB</strong>. Si crece más, divídelo: deja lo crítico en CLAUDE.md y referencia archivos secundarios (<code>convenciones-detalladas.md</code>, <code>onboarding.md</code>) que Claude leerá solo cuando los necesite.
+  </div>
+
+  <h3 id="slash">Slash commands: comandos personalizados</h3>
+  <p>Un <strong>slash command</strong> es un prompt prefabricado que invocas con <code>/nombre</code>. Vive en <code>.claude/commands/nombre.md</code> (proyecto) o <code>~/.claude/commands/nombre.md</code> (personal).</p>
+
+  <div class="simile">
+    Son los atajos del teclado. Si haces algo 5 veces a la semana, conviértelo en slash command. Lo escribes una vez bien, lo invocas mil. Te ahorra repetir el mismo prompt largo cada vez y te da consistencia.
+  </div>
+
+  <h4>Ejemplo: <code>/review</code></h4>
+  <div class="block-code" data-label=".claude/commands/review.md">
+<span class="c-com">---
+description: Revisa el código modificado actual buscando bugs, problemas de seguridad e inconsistencias con CLAUDE.md.
+allowed-tools: Read, Grep, Bash
+---</span>
+
+Eres un revisor senior. Vas a revisar los cambios actuales (git diff).
+
+Pasos:
+1. Ejecuta `git diff` y entiende los cambios.
+2. Revisa CLAUDE.md y verifica que se cumplen las convenciones.
+3. Busca: bugs lógicos, problemas de seguridad, manejo de errores 
+   ausente, tests que no se han actualizado, naming inconsistente.
+4. Devuélvelo en formato:
+   - <span class="c-tag">&lt;criticos&gt;</span>: bloquean el merge.
+   - <span class="c-tag">&lt;mejoras&gt;</span>: deberíamos arreglar antes de merge.
+   - <span class="c-tag">&lt;nits&gt;</span>: opcionales.
+
+Sé conciso. No repases lo obvio.
+  </div>
+
+  <p>Después: <code>claude</code> → <code>/review</code> y tienes una revisión consistente cada vez. Argumentos: usa <code>$ARGUMENTS</code> en el prompt y los pasas como <code>/review feature-X</code>.</p>
+
+  <h4>Slash commands útiles para empezar</h4>
+  <ul>
+    <li><code>/review</code> — revisión de cambios actuales.</li>
+    <li><code>/test-this</code> — escribe tests para el archivo abierto.</li>
+    <li><code>/explain</code> — explica el código del archivo, con foco en flujo y dependencias.</li>
+    <li><code>/refactor</code> — propone refactor con plan, sin tocar nada.</li>
+    <li><code>/commit</code> — analiza staged changes y propone mensaje de commit con Conventional Commits.</li>
+    <li><code>/sprint-doc</code> — genera documentación del trabajo del sprint a partir del histórico de Git.</li>
+  </ul>
+
+  <h3 id="subagents">Subagentes: paralelismo y aislamiento</h3>
+  <p>Un <strong>subagente</strong> es una instancia separada de Claude que recibe una sub-tarea, trabaja en su propio contexto, y devuelve el resultado al agente principal. Hasta 10 pueden correr en paralelo.</p>
+
+  <div class="simile">
+    Imagina que diriges una investigación. Tienes el caso completo en la cabeza. Mandas a tres becarios a buscar cosas distintas (uno a archivos, otro a entrevistas, otro a la web). Vuelven con sus informes y tú integras. <strong>Tu mente no se llena con todos los detalles que ellos vieron — solo con sus conclusiones.</strong> Eso son subagentes: te ahorran "ensuciarte" el contexto principal.
+  </div>
+
+  <p><strong>Cuándo usarlos:</strong></p>
+  <ul>
+    <li>Investigación paralela (buscar en docs + buscar en código + buscar en web).</li>
+    <li>Procesar muchos archivos donde cada uno requiere análisis profundo.</li>
+    <li>Ejecutar trabajo "ruidoso" (tests, comandos largos) sin saturar tu contexto.</li>
+  </ul>
+
+  <p><strong>Cuándo NO usarlos:</strong></p>
+  <ul>
+    <li>Tareas pequeñas que el agente principal puede hacer rápido.</li>
+    <li>Cuando necesitas que el agente principal entienda el detalle. Si externalizas el conocimiento a un subagente, el principal pierde contexto.</li>
+  </ul>
+
+  <p>Ejemplo de definición en <code>.claude/agents/security-reviewer.md</code>:</p>
+  <div class="block-code" data-label="subagent">
+<span class="c-com">---
+name: security-reviewer
+description: Revisor de seguridad senior. Úsalo PROACTIVAMENTE tras cambios en auth o manejo de datos sensibles.
+tools: Read, Grep, Glob, Bash
+model: opus
+---</span>
+
+Eres un ingeniero de seguridad senior. Analiza el código en busca de:
+- OWASP Top 10
+- Secretos hardcodeados, claves API expuestas
+- SQL injection, XSS, CSRF
+- Manejo deficiente de autenticación/autorización
+- Validación de inputs ausente
+
+Reporta cada hallazgo con: severidad (crítica/alta/media/baja), ubicación, descripción, fix recomendado.
+  </div>
+
+  <h3 id="hooks">Hooks: automatización determinista</h3>
+  <p>Los <strong>hooks</strong> son comandos que se ejecutan automáticamente en eventos específicos: antes de un edit, después de un edit, al finalizar una tarea, al pedir permiso. No es Claude pensando — es código determinista que asegura cosas que tienen que pasar siempre.</p>
+
+  <div class="simile">
+    Hooks son los <em>workflows de CI</em> dentro de tu sesión de Claude. La diferencia con CLAUDE.md: CLAUDE.md le pide a Claude que se acuerde de hacer algo, los hooks lo hacen aunque Claude se distraiga. Para cosas críticas (formateo, tipos, seguridad), no confíes en el modelo, automatiza.
+  </div>
+
+  <p><strong>Casos de uso típicos:</strong></p>
+  <ul>
+    <li>Pasar Prettier / Black automáticamente después de cada edit.</li>
+    <li>Verificar tipos (mypy / tsc) tras editar.</li>
+    <li>Notificación de escritorio cuando Claude termina una tarea larga.</li>
+    <li>Bloquear commits que no pasen los tests.</li>
+    <li>Logs auditables de qué archivos toca y cuándo.</li>
+  </ul>
+
+  <h3 id="code-mcp">MCP en Code: las extensiones</h3>
+  <p>Como en Chat, en Claude Code los <strong>servidores MCP</strong> permiten conectar herramientas externas. Particularmente útiles en desarrollo:</p>
+  <ul>
+    <li><strong>GitHub / GitLab MCP:</strong> abre PRs, comenta en issues, lee comentarios de revisiones, gestiona milestones.</li>
+    <li><strong>Jira / Linear MCP:</strong> sincroniza el trabajo en código con tickets, transiciona estados, añade comentarios al cerrar.</li>
+    <li><strong>Sentry / Datadog MCP:</strong> Claude puede consultar errores de producción en tiempo real para debugging.</li>
+    <li><strong>Postgres / SQLite MCP:</strong> ejecuta queries directas (con permisos read-only por defecto, ojo).</li>
+    <li><strong>Browser MCP / Playwright:</strong> ejecuta tests E2E reales y ve los resultados.</li>
+  </ul>
+
+  <h3 id="code-flujos">Flujos típicos para desarrolladores</h3>
+
+  <h4>Flujo 1 · Implementación de feature con plan-first</h4>
+  <ol>
+    <li>"Vamos a implementar la feature X. <strong>Antes de tocar nada</strong>, explora el repo, dime qué archivos vas a tocar, qué cambios harás en cada uno, y qué tests añadirás. No escribas código todavía."</li>
+    <li>Revisas el plan. Lo ajustas: "el cambio en X.py mejor sepáralo en dos commits. Los tests faltan los de error path."</li>
+    <li>"Adelante con el plan acordado."</li>
+    <li>Cuando termina: <code>/review</code> de los cambios.</li>
+    <li><code>/commit</code> para preparar mensaje con convención.</li>
+  </ol>
+
+  <h4>Flujo 2 · Debugging de bug en producción</h4>
+  <ol>
+    <li>Pega el stack trace y el contexto del incidente.</li>
+    <li>"Lee el código relevante. Antes de proponer fix, dime qué crees que pasa con tres hipótesis ranqueadas por probabilidad."</li>
+    <li>Validas la hipótesis correcta.</li>
+    <li>"Vamos con la hipótesis 1. Escribe primero el test que reproduzca el bug. Confírmame que falla. Luego propón fix."</li>
+    <li>Hooks corren tipos y lint automáticamente.</li>
+  </ol>
+
+  <h4>Flujo 3 · Refactor a través de múltiples archivos</h4>
+  <ol>
+    <li>"Quiero migrar todos los handlers de auth de la versión antigua (callbacks) a async/await. Mapea primero todos los puntos a tocar y agrúpalos por riesgo."</li>
+    <li>Revisas el mapa. Decides el orden.</li>
+    <li>"Empezamos por el grupo de bajo riesgo. Hazlo en una rama nueva, commit por archivo, corre tests entre commits."</li>
+    <li>Te trae los cambios listos para PR.</li>
+  </ol>
+
+  <h4>Flujo 4 · Onboarding de nuevo desarrollador</h4>
+  <p>Comando integrado: <code>/team-onboarding</code>. Inspecciona tu CLAUDE.md, las skills instaladas, los subagentes, los hooks, y los flujos recientes para generar una guía de bienvenida del repo.</p>
+
+  <h3 id="code-pitfalls">Errores frecuentes (y cómo evitarlos)</h3>
+
+  <h4>1. No usar /clear</h4>
+  <p>Muchos usan la misma conversación para cinco tareas distintas. El contexto se ensucia, el modelo se confunde, los costes suben. Limpia entre tareas.</p>
+
+  <h4>2. Auto-aceptar todo</h4>
+  <p>Modo "yes-mode" sin leer los diffs. Es rápido y peligroso. Lee al menos los archivos críticos antes de aceptar.</p>
+
+  <h4>3. CLAUDE.md monstruo</h4>
+  <p>Documento de 50 KB con todo lo imaginable. El modelo se distrae. Mantén lo esencial; lo demás, en archivos referenciados.</p>
+
+  <h4>4. Confiar en lo que dice sin verificar</h4>
+  <p>Claude puede afirmar que ha corrido los tests y han pasado, cuando en realidad ni los corrió. <strong>Pídele siempre la salida real:</strong> "ejecuta los tests y pega el output completo". Hooks ayudan a forzar verificación real.</p>
+
+  <h4>5. Pedirle que arregle todo de golpe</h4>
+  <p>"Refactoriza todo el módulo de pagos." Receta para el desastre. Divide. Plan primero, ejecución por trozos, tests entre trozos.</p>
+
+  <h4>6. Subagentes para todo</h4>
+  <p>Por moda, gente que mete subagentes para tareas triviales y luego no entiende por qué el agente principal "no sabe nada". Subagentes solo cuando aportan aislamiento real o paralelismo real.</p>
+
+  <h4>7. No leer CLAUDE.md como equipo</h4>
+  <p>El archivo lo escribió uno hace seis meses, nadie lo ha tocado, tiene comandos obsoletos. Trátalo como código: revisa, actualiza, mantén. Es el contrato del equipo con el agente.</p>
+
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer-end">
+  <p>Esta guía vive y muta. Cuando aprendas un patrón nuevo, mándalo al canal de #claude-tips.</p>
+  <p>Si algo aquí ya está obsoleto, tu primer commit del día es actualizarlo.</p>
+</footer>
+
+</div>
+</body>
+</html>
