@@ -11,7 +11,6 @@
 | **Clasificación** | Confidencial — Uso interno del Consejo / Comité de Dirección |
 | **Horizonte del programa** | 12–18 meses (con hitos de decisión en meses 6, 9 y 12) |
 | **Marco normativo de referencia** | Reglamento (UE) 2024/1689 (RIA/AI Act) · Paquete Digital Omnibus · Proyecto de Ley Orgánica de IA (España, en tramitación) · RGPD / LOPDGDD |
-| **Estado del documento** | Para deliberación y aprobación |
 
 > **Aviso metodológico y legal.** Este documento constituye un marco de trabajo estratégico-operativo. Las referencias normativas reflejan el estado regulatorio a julio de 2026, incluida legislación en tramitación parlamentaria que puede sufrir modificaciones. No constituye asesoramiento jurídico ni laboral; las decisiones de cumplimiento y de estructura retributiva deberán validarse con asesores legales y laborales colegiados.
 
