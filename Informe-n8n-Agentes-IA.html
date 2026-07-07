@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automatización de Procesos: n8n y Agentes de IA · Informe Ejecutivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfbf9;
+  --card:#ffffff;
+  --border:#e6e5e0;
+  --ink:#1e1e1c;
+  --ink-2:#3d3d3a;
+  --dim:#6e6e68;
+  --faint:#9a9a92;
+  --accent:#2f4858;
+  --accent-soft:#eef2f4;
+  --amber:#8a6220;
+  --amber-soft:#f6f0e2;
+  --green:#4a6b57;
+  --green-soft:#edf1ee;
+  --green-ink:#274a37;
+  --red:#8a3630;
+  --red-soft:#f6ebe9;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.7;
+}
+.wrap{max-width:860px; margin:0 auto; padding:64px 28px 90px;}
+
+/* floating nav menu */
+.navmenu{position:fixed; top:18px; left:18px; z-index:900;}
+.navmenu-btn{
+  list-style:none; cursor:pointer; user-select:none;
+  display:flex; align-items:center; gap:8px;
+  background:var(--card); border:1px solid var(--border); border-radius:24px;
+  padding:10px 16px; font-size:13px; font-weight:600; color:var(--accent);
+  box-shadow:0 2px 6px rgba(30,30,28,0.08);
+  font-family:'Inter',sans-serif; transition:box-shadow .15s ease;
+}
+.navmenu-btn::-webkit-details-marker{display:none;}
+.navmenu-btn:hover{box-shadow:0 3px 10px rgba(30,30,28,0.14);}
+.navmenu-btn .bars{font-family:monospace; font-size:15px; line-height:1;}
+.navmenu[open] .navmenu-btn{border-color:var(--accent);}
+.navmenu-panel{
+  margin-top:8px; background:var(--card); border:1px solid var(--border); border-radius:10px;
+  box-shadow:0 8px 26px rgba(30,30,28,0.14); padding:10px; display:flex; flex-direction:column;
+  min-width:250px; max-height:70vh; overflow-y:auto;
+}
+.navmenu-panel .nm-title{
+  font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--faint); padding:6px 10px 8px;
+}
+.navmenu-panel a{
+  font-size:13.6px; color:var(--ink-2); text-decoration:none; padding:9px 10px;
+  border-radius:6px; display:flex; align-items:baseline; gap:8px;
+}
+.navmenu-panel a:hover{background:var(--accent-soft); color:var(--accent);}
+.navmenu-panel a .n{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint); flex:0 0 16px;}
+
+h1,h2,h3{font-family:'Source Serif 4',Georgia,serif; line-height:1.25; color:var(--ink);}
+h1{font-size:34px; font-weight:700; margin:0 0 10px;}
+h2{font-size:24px; font-weight:700; margin:0; letter-spacing:-0.01em;}
+h3{font-size:18px; font-weight:600; margin:30px 0 10px; color:var(--accent);}
+p{color:var(--ink-2); margin:0 0 16px;}
+ul,ol{color:var(--ink-2); padding-left:22px; margin:0 0 16px;}
+li{margin-bottom:7px;}
+strong{color:var(--ink);}
+.mono{font-family:'JetBrains Mono',monospace; font-size:0.86em;}
+
+/* header */
+.doc-head{border-bottom:3px solid var(--accent); padding-bottom:28px; margin-bottom:36px;}
+.kicker{font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:12px;}
+.subtitle{font-size:17px; color:var(--dim); margin:0 0 20px; max-width:620px;}
+.meta{display:flex; flex-wrap:wrap; gap:26px; font-size:13px; color:var(--dim);}
+.meta b{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--faint); font-weight:700;}
+
+/* toc */
+.toc{
+  background:var(--card); border:1px solid var(--border); border-radius:6px;
+  padding:20px 26px; margin-bottom:44px; font-size:14px;
+}
+.toc .toc-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--faint); margin-bottom:12px;}
+.toc ol{margin:0; padding-left:20px; columns:2; column-gap:36px;}
+.toc li{margin-bottom:6px;}
+.toc a{color:var(--accent); text-decoration:none; border-bottom:1px solid transparent;}
+.toc a:hover{border-bottom-color:var(--accent);}
+
+/* sections */
+section{margin-bottom:52px; scroll-margin-top:24px;}
+.sec-head{display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:20px;}
+.sec-num{font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:var(--faint);}
+
+/* exec summary */
+.exec{
+  background:var(--accent-soft); border-left:4px solid var(--accent); border-radius:0 6px 6px 0;
+  padding:20px 26px; margin-bottom:44px; font-size:15px;
+}
+.exec p{margin-bottom:10px;}
+.exec p:last-child{margin-bottom:0;}
+
+/* tables */
+.tbl{overflow-x:auto; margin:20px 0 34px; border:1px solid var(--border); border-radius:6px;}
+table{width:100%; border-collapse:collapse; background:var(--card); font-size:13.6px;}
+thead th{
+  background:var(--accent); color:#fff; text-align:left; padding:12px 18px;
+  font-weight:600; font-size:12.6px; letter-spacing:.02em;
+}
+tbody td{padding:14px 18px; border-bottom:1px solid var(--border); color:var(--ink-2); vertical-align:top; line-height:1.65;}
+.tbl-split tbody td:first-child{border-right:1px solid var(--border); font-weight:500; color:var(--ink);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:nth-child(even){background:#fafaf8;}
+
+/* callouts */
+.note{
+  border:1px solid var(--border); border-left:4px solid var(--amber); background:var(--amber-soft);
+  border-radius:0 6px 6px 0; padding:14px 20px; margin:18px 0; font-size:14px; color:var(--ink-2);
+}
+.note-green{border-left-color:var(--green); background:var(--green-soft); color:var(--green-ink);}
+.note-green strong{color:#173a26;}
+.note-red{border-left-color:var(--red); background:var(--red-soft); color:#5c2420;}
+.note-red strong{color:#4a1c18;}
+
+/* implementation phases */
+.phases{display:flex; flex-direction:column; gap:14px; margin:20px 0;}
+.phase{
+  background:var(--card); border:1px solid var(--border); border-radius:6px;
+  padding:18px 22px; border-left:4px solid var(--accent); display:flex; gap:18px; align-items:flex-start;
+}
+.phase .ph-num{
+  font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; color:var(--accent);
+  flex:0 0 34px;
+}
+.phase .ph-body h4{font-family:'Source Serif 4',serif; font-size:16px; margin:0 0 4px; color:var(--ink);}
+.phase .ph-time{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; display:block;}
+.phase .ph-body p{font-size:14px; margin:0 0 8px;}
+.phase .ph-body p:last-child{margin-bottom:0;}
+
+/* two column compare */
+.compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0;}
+.compare .col{
+  background:var(--card); border:1px solid var(--border); border-radius:6px; padding:18px 22px;
+  border-top:3px solid var(--accent);
+}
+.compare .col h4{font-family:'Source Serif 4',serif; font-size:16px; margin:0 0 12px; color:var(--ink);}
+.compare .col ul{font-size:13.8px; padding-left:18px; margin:0;}
+.compare .col li{margin-bottom:8px;}
+
+/* provider cards */
+.provider{
+  background:var(--card); border:1px solid var(--border); border-radius:6px;
+  padding:24px 28px; margin:22px 0;
+}
+.provider .p-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:6px;}
+.provider h4{font-family:'Source Serif 4',serif; font-size:18px; margin:0; color:var(--ink);}
+.provider .p-product{font-size:12.5px; color:var(--dim); font-family:'JetBrains Mono',monospace;}
+.provider .p-body{font-size:14.5px;}
+.provider .p-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:0 26px; margin-top:14px;
+  border-top:1px solid var(--border); padding-top:14px;
+}
+.provider .p-item{font-size:13.5px; color:var(--ink-2); margin-bottom:10px;}
+.provider .p-item b{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--faint); font-weight:700; margin-bottom:2px;}
+.roi-line{grid-column:1 / -1; background:var(--green-soft); border-radius:4px; padding:10px 14px; font-size:13.5px; color:var(--ink-2);}
+.roi-line b{color:var(--green); text-transform:none; letter-spacing:0; font-size:13.5px; display:inline;}
+
+/* conclusions */
+.concl{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0;}
+.concl .box{background:var(--card); border:1px solid var(--border); border-radius:6px; padding:18px 22px;}
+.concl h4{font-family:'Source Serif 4',serif; font-size:16px; margin:0 0 10px;}
+.concl ul{font-size:13.8px; padding-left:18px; margin:0;}
+.concl li{margin-bottom:8px;}
+
+/* footer */
+.doc-foot{border-top:1px solid var(--border); margin-top:56px; padding-top:20px; font-size:12.5px; color:var(--faint); line-height:1.6;}
+
+@media (max-width:720px){
+  .compare, .concl, .provider .p-grid{grid-template-columns:1fr;}
+  .toc ol{columns:1;}
+  h1{font-size:28px;}
+}
+@media print{
+  body{background:#fff;}
+  .wrap{padding:0;}
+}
+</style>
+</head>
+<body>
+
+<details class="navmenu" id="navmenu">
+  <summary class="navmenu-btn"><span class="bars">☰</span> Índice</summary>
+  <nav class="navmenu-panel">
+    <div class="nm-title">Contenido</div>
+    <a href="#s1"><span class="n">01</span> Qué es n8n</a>
+    <a href="#s2"><span class="n">02</span> Qué son los agentes</a>
+    <a href="#s3"><span class="n">03</span> Especialidad n8n</a>
+    <a href="#s4"><span class="n">04</span> Especialidad agentes</a>
+    <a href="#s5"><span class="n">05</span> Ejemplos n8n</a>
+    <a href="#s6"><span class="n">06</span> Ejemplos agentes</a>
+    <a href="#s7"><span class="n">07</span> Plataformas y ROI</a>
+    <a href="#s8"><span class="n">08</span> Metodología</a>
+    <a href="#s9"><span class="n">09</span> Conclusiones</a>
+  </nav>
+</details>
+<script>
+document.querySelectorAll('.navmenu-panel a').forEach(function(link){
+  link.addEventListener('click', function(){
+    document.getElementById('navmenu').removeAttribute('open');
+  });
+});
+</script>
+
+<div class="wrap">
+
+<header class="doc-head">
+  <div class="kicker">Informe técnico-estratégico · Automatización de procesos</div>
+  <h1>n8n y Agentes de IA: dos vías complementarias para automatizar la pyme</h1>
+  <p class="subtitle">Qué es cada tecnología, dónde destaca cada una, ejemplos aplicados con plataformas de los principales proveedores, y criterios de decisión con costes y retorno estimado.</p>
+  <div class="meta">
+    <div><b>Fecha</b>Julio 2026</div>
+    <div><b>Ámbito</b>PYME · España</div>
+    <div><b>Autor</b>Gabriel Gisbert Aznar</div>
+    <div><b>Carácter</b>Orientativo · No vinculante</div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="toc-title">Contenido</div>
+  <ol>
+    <li><a href="#s1">Qué es n8n y cómo automatiza</a></li>
+    <li><a href="#s2">Qué son los agentes de IA y cómo automatizan</a></li>
+    <li><a href="#s3">Dónde es especialista n8n</a></li>
+    <li><a href="#s4">Dónde son especialistas los agentes de IA</a></li>
+    <li><a href="#s5">Ejemplos de automatización con n8n</a></li>
+    <li><a href="#s6">Ejemplos con agentes de IA en la pyme</a></li>
+    <li><a href="#s7">Plataformas de agentes por proveedor: ejemplo, coste y ROI</a></li>
+    <li><a href="#s8">Metodología de implantación</a></li>
+    <li><a href="#s9">Conclusiones para el uso óptimo</a></li>
+  </ol>
+</nav>
+
+<div class="exec">
+  <p><strong>Síntesis ejecutiva.</strong> n8n y los agentes de IA no compiten: resuelven problemas distintos. n8n es el motor determinista — integra sistemas, ejecuta reglas y deja traza auditable de cada paso. El agente de IA es el componente que interpreta, razona y decide cuando la entrada es ambigua o no estructurada.</p>
+  <p>La arquitectura ganadora en la pyme de 2026 es <strong>híbrida</strong>: n8n como columna vertebral del proceso, y el agente insertado únicamente en los puntos donde una regla fija no basta. La decisión no es "cuál elegir", sino "qué tramo del proceso corresponde a cada uno".</p>
+</div>
+
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Qué es n8n y cómo automatiza procesos</h2></div>
+
+  <p><strong>n8n</strong> ("nodemation") es una plataforma de automatización de flujos de trabajo <em>fair-code</em> (código abierto con restricciones comerciales), fundada en Berlín en 2019. Combina un editor visual de arrastrar y soltar con la posibilidad de insertar código propio (JavaScript/Python) en cualquier punto del flujo, situándose a medio camino entre las herramientas <em>no-code</em> (Zapier, Make) y el desarrollo a medida.</p>
+
+  <h3>Mecánica interna</h3>
+  <p>n8n automatiza mediante <strong>flujos de trabajo (workflows)</strong> compuestos por <strong>nodos</strong> conectados entre sí; el dato viaja de nodo a nodo como un objeto JSON, transformándose en cada paso. Tres tipos de pieza sostienen la arquitectura:</p>
+  <ul>
+    <li><strong>Triggers (disparadores):</strong> inician el flujo — un webhook, una ejecución programada (cron), un email entrante, un formulario, un mensaje de Slack o Telegram.</li>
+    <li><strong>Nodos de acción:</strong> ejecutan una tarea concreta — leer una hoja de cálculo, llamar a una API, escribir en una base de datos, generar un documento, enviar un correo. La plataforma ofrece varios centenares de nodos preconstruidos (Google Workspace, Microsoft 365, Slack, CRMs, bases de datos, almacenamiento en la nube) y un nodo <span class="mono">HTTP Request</span> genérico para cualquier API sin nodo dedicado.</li>
+    <li><strong>Nodos de lógica:</strong> condicionales (IF/Switch), bucles, fusión de datos, esperas, y manejo de errores con reintentos y rutas alternativas.</li>
+  </ul>
+  <p>El resultado es un proceso <strong>determinista y auditable</strong>: ante la misma entrada, el flujo sigue siempre la misma ruta lógica, y cada ejecución queda registrada paso a paso — una propiedad crítica en sectores regulados y para la trazabilidad exigida por marcos como el Reglamento europeo de IA.</p>
+
+  <h3>Modelos de despliegue</h3>
+  <ul>
+    <li><strong>n8n Cloud:</strong> SaaS gestionado, con planes de entrada en torno a 24 €/mes, sin infraestructura propia.</li>
+    <li><strong>Self-hosted:</strong> despliegue en servidor propio (Docker/Kubernetes) con ejecuciones ilimitadas sin coste por tarea — la opción preferente cuando existen requisitos de soberanía del dato o el volumen hace inviable el precio por tarea de plataformas competidoras.</li>
+  </ul>
+
+  <div class="note">
+    <strong>El coste que no aparece en la factura: mantenimiento técnico y vendor lock-in.</strong> El modelo self-hosted no elimina el coste de n8n Cloud — lo <em>traslada</em>. Pasa a la infraestructura (un servidor en AWS, Azure, Hetzner o equivalente) y, sobre todo, a las horas de un perfil DevOps que mantenga el contenedor Docker/Kubernetes actualizado, parcheado y monitorizado 24/7. Para una pyme sin ese perfil interno, ese mantenimiento debe presupuestarse desde el primer día —vía soporte gestionado o unas horas mensuales de un proveedor externo— y no descubrirse en el primer incidente de producción. Además, aunque n8n reduce el <em>lock-in</em> frente a alternativas más cerradas (los flujos se exportan como JSON), la lógica de negocio queda igualmente codificada en un formato propietario: migrar cientos de flujos a otra plataforma en el futuro no es trivial y debe considerarse un coste de salida real, no teórico.
+  </div>
+
+  <h3>La capa de IA dentro de n8n</h3>
+  <p>Desde 2025-2026, n8n incorpora un <strong>nodo AI Agent nativo</strong> que permite insertar un agente razonador <em>dentro</em> de un flujo determinista: el agente decide qué herramienta usar, mantiene memoria de conversación (buffer, resumen o backend persistente en Redis/Postgres) y ejecuta un bucle de razonamiento antes de devolver el resultado al resto del flujo. Las versiones de 2026 añadieron <em>tool calling</em> estructurado con validación de esquema (que evita bucles infinitos ante llamadas malformadas), pasos de aprobación humana configurables sobre herramientas concretas y trazabilidad del razonamiento intermedio en el log de ejecución. En consecuencia, <strong>n8n no obliga a elegir entre automatización clásica e IA: permite combinarlas en el mismo lienzo</strong>, usando IA solo en el paso donde aporta valor y dejando el resto en lógica determinista — más rápida, más barata y más predecible.</p>
+</section>
+
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Qué son los agentes de IA y cómo automatizan procesos</h2></div>
+
+  <p>Un <strong>agente de IA</strong> es un sistema construido sobre un modelo de lenguaje (LLM) que no se limita a responder: <strong>razona, decide y actúa</strong> de forma autónoma para cumplir un objetivo. Interpreta una entrada, determina los pasos necesarios, invoca herramientas externas (APIs, búsquedas, bases de datos, otros modelos), evalúa el resultado y repite el ciclo hasta resolver la tarea — o hasta solicitar intervención humana.</p>
+
+  <h3>El bucle de razonamiento y acción</h3>
+  <p>El mecanismo central es el patrón <strong>ReAct</strong> (<em>Reasoning + Acting</em>):</p>
+  <ol>
+    <li>El agente recibe una entrada (un ticket, un correo, un documento, una instrucción en lenguaje natural).</li>
+    <li><strong>Razona</strong> qué necesita hacer y qué herramienta emplear.</li>
+    <li><strong>Actúa</strong>: invoca la herramienta mediante <em>tool calling</em> — una API, una consulta a base vectorial (RAG), un cálculo, un sub-flujo.</li>
+    <li><strong>Observa</strong> el resultado.</li>
+    <li>Repite hasta resolver la tarea o alcanzar un límite de pasos o de confianza, momento en que escala a un humano.</li>
+  </ol>
+  <p>A diferencia del flujo determinista, <strong>el agente decide su propia ruta en tiempo real</strong> según el contenido de cada entrada, no según una ruta pre-programada. Eso le permite absorber la <strong>variabilidad y la ambigüedad</strong> que romperían un flujo clásico: un correo sin formato, una pregunta con varias resoluciones posibles, un documento de estructura irregular.</p>
+
+  <h3>Componentes de fiabilidad en producción (estado 2026)</h3>
+  <ul>
+    <li><strong>Memoria:</strong> buffer de conversación, memoria-resumen o almacenamiento persistente por sesión para mantener contexto entre turnos.</li>
+    <li><strong>Tool calling estructurado con validación de esquema:</strong> evita los bucles infinitos ante llamadas malformadas — uno de los fallos de producción más frecuentes en implementaciones anteriores a 2026.</li>
+    <li><strong>Guardrails:</strong> límites de pasos, umbrales de confianza, aprobación humana obligatoria antes de acciones críticas (emitir un contrato, ejecutar un pago) y logs de razonamiento auditables.</li>
+    <li><strong>Orquestación multiagente:</strong> un agente coordinador classifies la intención y delega en sub-agentes especializados (CRM, facturación, atención al cliente), reduciendo coste de tokens y superficie de error frente a un agente monolítico.</li>
+  </ul>
+
+  <h3>El coste invisible: deriva de modelos y mantenimiento de prompts</h3>
+  <div class="note">
+    <strong>Model drift (deriva de modelo).</strong> Un agente que funciona hoy con una versión concreta de GPT, Claude o Gemini puede cambiar de comportamiento cuando el proveedor actualiza los pesos del modelo en producción — algo que ocurre varias veces al año y que el cliente ni controla ni siempre puede anticipar. Un prompt afinado en enero puede degradarse en julio sin que nadie haya tocado una línea de código propio.
+    <br><br>
+    <strong>Implicación presupuestaria.</strong> Auditar periódicamente el comportamiento del agente, reajustar prompts y revalidar guardrails no es un extra opcional: debe figurar en el presupuesto recurrente del proyecto, con una cadencia recomendada <strong>semestral</strong> como mínimo, o inmediata tras cada actualización mayor de modelo anunciada por el proveedor.
+  </div>
+</section>
+
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Dónde n8n es especialista</h2></div>
+  <ul>
+    <li><strong>Integración de sistemas heterogéneos:</strong> conectar ERP, CRM, correo, hojas de cálculo, bases de datos y SaaS sin construir un backend.</li>
+    <li><strong>Procesos deterministas de alto volumen:</strong> tareas repetitivas con reglas claras que deben ejecutarse miles de veces sin desviación.</li>
+    <li><strong>Orquestación multi-sistema con lógica condicional compleja:</strong> ramificaciones, fusión de fuentes, reintentos, rutas de error.</li>
+    <li><strong>Trazabilidad y auditoría:</strong> registro paso a paso de cada ejecución — crítico en farma, finanzas y salud, y para el cumplimiento del Reglamento europeo de IA.</li>
+    <li><strong>Control de costes de IA a escala:</strong> filtrar, limpiar y enrutar el dato <em>antes</em> de enviarlo a un LLM, reduciendo llamadas y factura de API.</li>
+    <li><strong>Soberanía del dato:</strong> despliegue self-hosted en infraestructura propia — relevante para RGPD y datos sensibles.</li>
+    <li><strong>Automatización programada y por eventos:</strong> sincronizaciones periódicas, alertas, informes recurrentes.</li>
+    <li><strong>Prototipado rápido:</strong> de idea a flujo funcional en horas, con participación de perfiles no técnicos.</li>
+  </ul>
+</section>
+
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Dónde los agentes de IA son especialistas</h2></div>
+  <ul>
+    <li><strong>Entradas no estructuradas o ambiguas:</strong> correos en lenguaje libre, documentos irregulares, conversaciones abiertas.</li>
+    <li><strong>Clasificación e interpretación de intención:</strong> entender de qué trata una solicitud antes de decidir el tratamiento.</li>
+    <li><strong>Generación de contenido contextual:</strong> respuestas, resúmenes, propuestas e informes adaptados a cada caso concreto.</li>
+    <li><strong>Razonamiento multi-paso sobre información dispersa:</strong> combinar varias fuentes para llegar a una conclusión no explícita en ninguna por separado.</li>
+    <li><strong>Atención conversacional con memoria:</strong> soporte o asistentes internos que mantienen contexto a lo largo de la conversación.</li>
+    <li><strong>Consulta semántica sobre documentación propia (RAG):</strong> interrogar en lenguaje natural una base de conocimiento interna extensa, con cita de fuentes.</li>
+    <li><strong>Decisiones con criterio, no solo con reglas:</strong> priorizar, filtrar o arbitrar entre opciones que un condicional no resuelve.</li>
+    <li><strong>Adaptación a la variabilidad:</strong> cada ejecución razona de forma distinta según el contenido real, sin reprogramar nada.</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Situaciones de ejemplo de automatización con n8n</h2></div>
+  <div class="tbl tbl-split"><table>
+    <thead><tr><th style="width:30%">Situación</th><th>Flujo n8n</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Sincronización pedidos e-commerce ↔ ERP</strong></td><td>Webhook de la tienda → validación de datos → creación de pedido en ERP → actualización de stock → notificación a logística</td></tr>
+      <tr><td><strong>Onboarding de nuevo empleado</strong></td><td>Formulario RRHH → alta de usuario en Microsoft 365 → alta en Slack/Teams → registro en nómina/ERP → email de bienvenida con checklist</td></tr>
+      <tr><td><strong>Conciliación bancaria periódica</strong></td><td>Trigger diario → descarga de movimientos vía API bancaria → cruce con facturación del ERP → marcado de discrepancias → informe a Finanzas</td></tr>
+      <tr><td><strong>Backup y monitorización de servidores</strong></td><td>Cron nocturno → comprobación de servicios → snapshot/backup → alerta a IT ante fallo</td></tr>
+      <tr><td><strong>Informes recurrentes de gestión</strong></td><td>Trigger semanal → consulta a BD/ERP → cálculo de KPIs → generación de PDF/Excel → envío a Dirección</td></tr>
+      <tr><td><strong>Publicación multicanal de contenido</strong></td><td>Nuevo post en CMS → adaptación de formato → publicación simultánea en LinkedIn, X y newsletter</td></tr>
+      <tr><td><strong>Gestión documental de proveedores</strong></td><td>Email con adjunto → extracción → validación de campos → registro en ERP → archivo estructurado en Drive</td></tr>
+      <tr><td><strong>Alertas de inventario</strong></td><td>Consulta periódica de stock → si stock &lt; umbral → solicitud de compra automática a proveedor</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Situaciones de ejemplo con agentes de IA en una pyme</h2></div>
+  <div class="tbl tbl-split"><table>
+    <thead><tr><th style="width:30%">Situación</th><th>Cómo actúa el agente</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Triaje de soporte N1</strong></td><td>Lee el ticket, clasifica la intención, resuelve consultas frecuentes con RAG sobre manuales propios y escala al humano —con resumen adjunto— solo lo que realmente lo requiere</td></tr>
+      <tr><td><strong>Preparación de visitas comerciales</strong></td><td>Cruza el historial CRM con información pública reciente del cliente y redacta una ficha ejecutiva con señales de compra, sin plantilla fija</td></tr>
+      <tr><td><strong>Cualificación de leads entrantes</strong></td><td>Interpreta el mensaje de contacto (formulario, email, WhatsApp), valora el interés real y prioriza el pipeline sin reglas rígidas de palabras clave</td></tr>
+      <tr><td><strong>Asistente interno de convenio y políticas</strong></td><td>Responde en lenguaje natural dudas de empleados sobre permisos, vacaciones o procedimientos, citando la fuente exacta del documento</td></tr>
+      <tr><td><strong>Redacción asistida de ofertas</strong></td><td>A partir del pliego del cliente y las plantillas ganadoras anteriores, redacta un borrador de propuesta adaptado, no una plantilla rellenada</td></tr>
+      <tr><td><strong>Revisión de contratos y pliegos</strong></td><td>Lee documentos extensos y señala cláusulas de riesgo, plazos y costes ocultos que un filtro de palabras clave no detectaría</td></tr>
+      <tr><td><strong>Resumen ejecutivo de reuniones e informes</strong></td><td>Convierte actas e informes largos en resúmenes accionables adaptados al rol del destinatario (Dirección, Comercial, IT)</td></tr>
+      <tr><td><strong>Asistente de código y documentación IT</strong></td><td>Entiende el contexto del repositorio o del ticket y propone soluciones o documentación razonada, no solo autocompletado</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Plataformas de agentes por proveedor: ejemplo aplicado, coste y ROI</h2></div>
+
+  <p>Los cuatro grandes proveedores con oferta de agentes en producción a mediados de 2026 son OpenAI, Anthropic, Google y Microsoft. Para cada uno se presenta un caso aplicado de pyme —deliberadamente alejado del tópico del filtrado de correos—, con coste orientativo del primer año y retorno estimado.</p>
+
+  <div class="note">
+    <strong>Nota metodológica.</strong> Los costes incluyen construcción (horas de perfil técnico interno o consultor), licencias/consumo de API y un margen de mantenimiento. El ROI se calcula sobre un coste-hora interno cargado de 35 €/h y volúmenes conservadores. Son <strong>órdenes de magnitud para decidir</strong>, no presupuestos: el consumo real de tokens depende del volumen y del diseño del agente, y los precios de los proveedores están cambiando con rapidez en 2026 tras el fin de los precios subvencionados de adopción. Toda cifra debe validarse con un piloto medido contra línea base.
+  </div>
+
+  <div class="provider">
+    <div class="p-head">
+      <h4>OpenAI</h4>
+      <span class="p-product">Agents SDK · Responses API · Workspace Agents (ChatGPT)</span>
+    </div>
+    <div class="p-body">
+      <p>Oferta centrada en el <strong>Agents SDK</strong> (código, Python/TypeScript) con primitivas de agentes, <em>handoffs</em> entre agentes, guardrails y trazado integrado; en 2026 añadió ejecución en <em>sandboxes</em> aislados para tareas largas. Importante para planificar: OpenAI ha anunciado la retirada de su herramienta visual Agent Builder a finales de noviembre de 2026, recomendando el SDK para flujos en código — cualquier inversión nueva debe apuntar al SDK, no al builder visual.</p>
+      <p><strong>Ejemplo aplicado — Agente comercial de cualificación y seguimiento de leads.</strong> Una pyme de servicios B2B recibe 150 leads/mes por formulario, email y LinkedIn. El agente lee cada entrada, investiga la empresa (web pública + CRM), puntúa el encaje contra el perfil de cliente ideal, redacta un primer contacto personalizado y programa el seguimiento; los leads de alta puntuación pasan al comercial humano con ficha preparada. Es el patrón con el que casos documentados del sector (p. ej. agentes de ventas construidos sobre este SDK) han multiplicado la capacidad de prospección sin ampliar plantilla.</p>
+    </div>
+    <div class="p-grid">
+      <div class="p-item"><b>Coste de construcción (40–80 h)</b>Desarrollo interno: 1.400–2.800 €. Consultoría externa: 4.000–8.000 €.</div>
+      <div class="p-item"><b>Consumo API (ambos escenarios)</b>30–120 €/mes (360–1.440 €/año) combinando un modelo económico de la familia GPT-5 para el triaje y el modelo superior solo en la redacción final.</div>
+      <div class="p-item"><b>Supuesto de ahorro</b>El comercial dedica ~20 min por lead a investigar y redactar el primer contacto: 150 × 20 min = 50 h/mes. El agente reduce ese tiempo un 70 % → 35 h/mes liberadas ≈ 1.225 €/mes (~14.700 €/año).</div>
+      <div class="roi-line"><b>ROI estimado:</b> con desarrollo interno, inversión año 1 ≈ 1.800–4.200 € — retorno en <b>1,5–3,5 meses</b>. Con consultoría externa, inversión ≈ 4.400–9.400 € — retorno en <b>3,5–8 meses</b>. En ambos casos, sin contar el ingreso adicional por leads mejor trabajados.</div>
+    </div>
+  </div>
+
+  <div class="provider">
+    <div class="p-head">
+      <h4>Anthropic (Claude)</h4>
+      <span class="p-product">Claude Agent SDK · Claude API · Claude Code / Cowork</span>
+    </div>
+    <div class="p-body">
+      <p>Oferta articulada en el <strong>Claude Agent SDK</strong> (paradigma "dale un ordenador al agente": acceso controlado a ficheros, terminal y herramientas), la API con <em>tool use</em> y dos palancas de coste diferenciales: <em>prompt caching</em> (reduce drásticamente el coste de contextos repetidos, hasta ~90 % en la parte cacheada) y <em>Batch API</em> (−50 % en tareas no urgentes). Sus modelos destacan en razonamiento profundo sobre documentos largos y en baja tasa de alucinación, lo que los hace idóneos para trabajo documental crítico.</p>
+      <p><strong>Ejemplo aplicado — Agente de licitaciones públicas.</strong> Una ingeniería o constructora pyme quiere concurrir a más concursos públicos, pero cada pliego (100–300 páginas) exige un día de lectura para decidir si merece la pena. El agente ingiere el pliego, extrae solvencia exigida, criterios de adjudicación, plazos e importes, lo contrasta con las capacidades de la empresa (documento de referencia cacheado) y emite un dictamen go/no-go con los riesgos señalados; para los "go", genera el esqueleto de la memoria técnica. El contexto fijo de la empresa se cachea, así que cada pliego adicional cuesta una fracción del primero.</p>
+    </div>
+    <div class="p-grid">
+      <div class="p-item"><b>Coste de construcción (60–100 h)</b>Desarrollo interno: 2.100–3.500 €. Consultoría externa: 5.000–10.000 €.</div>
+      <div class="p-item"><b>Consumo API (ambos escenarios)</b>80–250 €/mes (960–3.000 €/año) analizando 15 pliego/mes con caching agresivo; sin caching podría multiplicarse por 4–6.</div>
+      <div class="p-item"><b>Supuesto de ahorro</b>Un técnico senior (65 €/h) dedica ~8 h por pliego a la criba inicial: 15 × 8 h = 120 h/mes. El agente reduce la criba un 75 % → 90 h/mes liberadas ≈ 5.850 €/mes (~70.200 €/año).</div>
+      <div class="roi-line"><b>ROI estimado:</b> con desarrollo interno, inversión año 1 ≈ 3.000–6.500 € — retorno en <b>&lt;1–1 mes</b>. Con consultoría externa, inversión ≈ 6.000–13.000 € — retorno en <b>1–2 meses</b>. El valor real suele ser mayor: presentarse a un solo concurso adicional ganado puede pagar el sistema varios años.</div>
+    </div>
+  </div>
+
+  <div class="provider">
+    <div class="p-head">
+      <h4>Google (Gemini)</h4>
+      <span class="p-product">Gemini Enterprise Agent Platform · Vertex AI</span>
+    </div>
+    <div class="p-body">
+      <p>Plataforma integral de ciclo de vida de agentes (diseño, despliegue, monitorización) sobre Google Cloud, con una particularidad estratégica anunciada en 2026: <strong>soporta también modelos de Anthropic (Claude)</strong> además de la familia Gemini, reduciendo el <em>lock-in</em> de modelo. Sus fortalezas son la integración nativa con Google Workspace, el RAG multimodal y un precio de modelos agresivo. Casos corporativos publicados incluyen la automatización de análisis de riesgo de crédito con agentes en Vertex AI.</p>
+      <p><strong>Ejemplo aplicado — Agente de riesgo de cobro y condiciones de pago.</strong> Una distribuidora pyme concede pago a 30/60 días a clientes B2B y sufre impagos recurrentes. El agente, ante cada solicitud de crédito comercial, consulta el histórico de pagos del cliente en el ERP, información mercantil pública (cuentas depositadas, incidencias) y noticias recientes, y emite una recomendación razonada de límite de crédito y condiciones — con la decisión final siempre en manos de Finanzas (supervisión humana obligatoria: es una decisión con impacto material).</p>
+    </div>
+    <div class="p-grid">
+      <div class="p-item"><b>Coste de construcción (50–90 h)</b>Desarrollo interno: 1.750–3.150 €. Consultoría externa: 4.500–9.000 €.</div>
+      <div class="p-item"><b>Consumo (ambos escenarios)</b>40–150 €/mes (480–1.800 €/año) con modelos Gemini Flash/Pro según complejidad, para 60–100 evaluaciones mensuales.</div>
+      <div class="p-item"><b>Supuesto de ahorro</b>Evitar un solo impago mediano (5.000–15.000 €) al año ya supera el coste total del sistema. Adicionalmente, Finanzas ahorra ~1 h por evaluación manual: 80 h/mes → ~2.800 €/mes (~33.600 €/año).</div>
+      <div class="roi-line"><b>ROI estimado:</b> con desarrollo interno, inversión año 1 ≈ 2.200–5.000 € — retorno en <b>&lt;1–2 meses</b>. Con consultoría externa, inversión ≈ 5.000–10.800 € — retorno en <b>2–4 meses</b>. El impago evitado convierte el caso en asimétrico a favor en cualquiera de los dos escenarios.</div>
+    </div>
+  </div>
+
+  <div class="provider">
+    <div class="p-head">
+      <h4>Microsoft</h4>
+      <span class="p-product">Copilot Studio · Microsoft 365 Copilot · Azure AI Foundry</span>
+    </div>
+    <div class="p-body">
+      <p>La vía de menor fricción para pymes que ya viven en Microsoft 365: <strong>Copilot Studio</strong> permite construir agentes con enfoque <em>low-code</em> que operan dentro de Teams, SharePoint y Outlook, heredando la seguridad y las políticas de acceso ya configuradas en el tenant (Entra ID, Purview). El coste por asiento es el más alto del mercado si aún no se dispone de M365 (~30 €/usuario/mes de Copilot sobre la licencia base), pero la integración nativa elimina gran parte del coste de construcción.</p>
+      <p><strong>Ejemplo aplicado — Agente de operaciones y partes de trabajo en Teams.</strong> Una empresa instaladora con 15 técnicos de campo gestiona partes de trabajo, incidencias y disponibilidad por Teams y SharePoint. El agente recibe el parte dictado o escrito por el técnico en Teams, lo estructura, lo registra en la lista de SharePoint/Dataverse, comprueba material contra el inventario, genera el borrador de albarán y avisa al responsable si detecta incidencia o material faltante. Todo dentro del entorno que la plantilla ya usa — sin app nueva que adoptar, que es donde mueren muchos proyectos de campo.</p>
+    </div>
+    <div class="p-grid">
+      <div class="p-item"><b>Coste de construcción (30–60 h low-code)</b>Desarrollo interno: 1.050–2.100 €. Con partner externo: 2.500–6.000 €.</div>
+      <div class="p-item"><b>Licencias (ambos escenarios)</b>Copilot Studio/M365 Copilot para 5–10 asientos implicados (no toda la plantilla): 1.800–3.600 €/año.</div>
+      <div class="p-item"><b>Supuesto de ahorro</b>Cada técnico pierde ~25 min/día en burocracia del parte y el administrativo ~2 h/día consolidándolos: en conjunto ≈ 105 h/mes. Reducción del 60 % → 63 h/mes ≈ 2.205 €/mes (~26.460 €/año).</div>
+      <div class="roi-line"><b>ROI estimado:</b> con desarrollo interno, inversión año 1 ≈ 2.850–5.700 € — retorno en <b>1–3 meses</b>. Con partner externo, inversión ≈ 4.300–9.600 € — retorno en <b>2–5 meses</b>. La adopción es el principal riesgo en ambos casos, mitigado al operar dentro de Teams.</div>
+    </div>
+  </div>
+
+  <div class="note-green">
+    <strong>Sobre DeepSeek y los modelos abiertos.</strong> DeepSeek no comercializa una plataforma de agentes propia — es un proveedor de modelos (API de bajo coste y pesos abiertos), por lo que no figura como plataforma en este apartado. Su relevancia para la pyme es otra: como <strong>motor económico para agentes autoalojados</strong> (vía n8n, frameworks abiertos u orquestadores tipo OpenCode), especialmente cuando la soberanía del dato exige que nada salga de infraestructura propia. Exige capacidad técnica interna para desplegar y mantener el modelo, y una evaluación de riesgos propia (procedencia del modelo, soporte, cumplimiento).
+  </div>
+
+  <div class="note-red">
+    <strong>Advertencia sobre el coste de hardware.</strong> Ejecutar estos modelos de forma autónoma con un rendimiento aceptable exige GPU de gama alta — ya sea infraestructura local (una sola GPU de centro de datos puede suponer 8.000–25.000 € de inversión, más consumo eléctrico y refrigeración) o alquiler por horas en la nube (proveedores tipo RunPod o Vast.ai, con tarifas orientativas de 0,20–2 €/hora de GPU según el modelo y la carga). Para volúmenes bajos o medios, el alquiler por horas suele salir más a cuenta que la compra. En cualquier caso, "autoalojado" no significa automáticamente "más barato": el punto de equilibrio frente a la API de un proveedor comercial debe calcularse caso a caso antes de comprometer inversión.
+  </div>
+
+  <p>La tabla siguiente aplica una <strong>metodología homogénea</strong> a los cuatro proveedores: coste y retorno bajo dos escenarios de construcción —desarrollo interno a coste-hora cargado, o consultoría/partner externo— para que la comparación sea defendible ante cualquier Dirección Financiera.</p>
+
+  <div class="tbl"><table>
+    <thead>
+      <tr>
+        <th>Proveedor</th>
+        <th>Perfil de pyme idóneo</th>
+        <th>Inversión Interna (Año 1)</th>
+        <th>Retorno Interno</th>
+        <th>Inversión Consultor (Año 1)</th>
+        <th>Retorno Consultor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>OpenAI</strong></td>
+        <td>Con desarrollo propio; casos comerciales y de soporte</td>
+        <td>1.800–4.200 €</td>
+        <td>1,5–3,5 meses</td>
+        <td>4.400–9.400 €</td>
+        <td>3,5–8 meses</td>
+      </tr>
+      <tr>
+        <td><strong>Anthropic</strong></td>
+        <td>Trabajo documental crítico (licitaciones, contratos)</td>
+        <td>3.000–6.500 €</td>
+        <td>&lt;1 mes</td>
+        <td>6.000–13.000 €</td>
+        <td>1–2 meses</td>
+      </tr>
+      <tr>
+        <td><strong>Google</strong></td>
+        <td>Ecosistema Workspace; datos masivos y fuentes externas</td>
+        <td>2.200–5.000 €</td>
+        <td>&lt;1–2 meses</td>
+        <td>5.000–10.800 €</td>
+        <td>2–4 meses</td>
+      </tr>
+      <tr>
+        <td><strong>Microsoft</strong></td>
+        <td>Ecosistema M365 consolidado; procesos en Teams</td>
+        <td>2.850–5.700 €</td>
+        <td>1–3 meses</td>
+        <td>4.300–9.600 €</td>
+        <td>2–5 meses</td>
+      </tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s8">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Metodología de implantación: de la decisión al proceso en producción</h2></div>
+
+  <p>Ningún informe de automatización está completo si solo responde qué elegir y cuánto cuesta. La pregunta que sigue de inmediato en cualquier comité de dirección es otra: <strong>¿durante cuánto tiempo va a estar la empresa "patas arriba" si esto se aprueba?</strong> La respuesta es una metodología ágil de <strong>cuatro fases</strong>, pensada para un horizonte de <strong>12–18 meses</strong> y diseñada para mitigar el riesgo de adopción desde el primer día, no para maximizar el alcance del proyecto.</p>
+
+  <div class="phases">
+    <div class="phase">
+      <span class="ph-num">01</span>
+      <div class="ph-body">
+        <span class="ph-time">Semanas 1–3</span>
+        <h4>Descubrimiento y línea base</h4>
+        <p>Mapeo del proceso <em>As-Is</em> tal como ocurre hoy, no como debería ocurrir. Medición exacta de tiempos manuales, coste-hora cargado y costes ocultos (errores, retrabajo, retrasos). Sin esta línea base congelada, ningún ROI posterior es defendible ante Dirección o Finanzas.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <span class="ph-num">02</span>
+      <div class="ph-body">
+        <span class="ph-time">Semanas 4–8</span>
+        <h4>Piloto con "quick win"</h4>
+        <p>Construcción de un MVP centrado en <strong>una sola tarea</strong> de alto impacto y bajo riesgo — por ejemplo, la criba de licitaciones con Anthropic o el triaje N1 de soporte. El objetivo no es cubrir todo el proceso, sino demostrar el retorno con datos reales antes de comprometer más presupuesto.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <span class="ph-num">03</span>
+      <div class="ph-body">
+        <span class="ph-time">Semanas 9–16</span>
+        <h4>Integración híbrida estructurada</h4>
+        <p>Despliegue de la columna vertebral en n8n (integraciones, triggers, lógica determinista) y acoplamiento de los agentes de IA con sus guardrails funcionales ya definidos: límites de pasos, umbrales de confianza y puntos de aprobación humana en las acciones críticas.</p>
+        <p><strong>Matriz de escalado y aprobaciones:</strong> Durante esta fase se define el protocolo de "Human-in-the-loop". El sistema híbrido se configura para que cualquier acción con impacto financiero, legal o reputacional directo quede bloqueada en n8n, enviando una alerta (vía Slack, Teams o email) con un botón interactivo para que un mánager humano valide o rechace la decisión del agente antes de su ejecución.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <span class="ph-num">04</span>
+      <div class="ph-body">
+        <span class="ph-time">Continuo, desde el mes 5</span>
+        <h4>Escalado y gobernanza de datos</h4>
+        <p>Auditoría periódica de logs de ejecución, reajuste de prompts ante deriva de modelo, optimización del <em>caching</em> para controlar el coste de API, y extensión del patrón validado a nuevos procesos del backlog.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-green">
+    <strong>Por qué 4 fases y no un "big bang".</strong> Repartir el proyecto en fases con un piloto de alcance deliberadamente pequeño (Fase 2) es lo que separa una automatización que sobrevive a su primer incidente de producción de un proyecto que se cancela a los tres meses. El coste de descubrir un problema de diseño en la Fase 2, sobre una sola tarea, es una fracción del coste de descubrirlo en la Fase 3, con la columna vertebral completa ya desplegada.
+  </div>
+</section>
+
+<section id="s9">
+  <div class="sec-head"><span class="sec-num">09</span><h2>Conclusiones para el uso óptimo</h2></div>
+  <div class="concl">
+    <div class="box">
+      <h4>n8n</h4>
+      <ul>
+        <li>Úsalo como <strong>columna vertebral</strong>: lógica determinista, integración de sistemas y trazabilidad.</li>
+        <li>Resérvalo para procesos con <strong>reglas claras y alto volumen</strong>, donde la previsibilidad importa más que la interpretación.</li>
+        <li>Elige <strong>self-hosted</strong> cuando el dato sea sensible o el volumen haga inviable el precio por tarea.</li>
+        <li>Integra IA solo en los <strong>nodos puntuales</strong> donde aporte valor (clasificar, redactar, decidir), no en todo el flujo.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Agentes de IA</h4>
+      <ul>
+        <li>Reserva el agente para los <strong>tramos con ambigüedad real</strong>: texto libre, criterio, síntesis de fuentes dispersas.</li>
+        <li>Blíndalo con <strong>guardrails</strong>: límites de pasos, validación de herramientas y aprobación humana ante acciones críticas.</li>
+        <li>No lo uses donde un condicional resuelve igual y más barato: el agente cuesta más y es menos predecible que una regla.</li>
+        <li>Mide su tasa de resolución autónoma contra <strong>línea base</strong> y ajustado el escalado a humano con datos, no con intuición.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="doc-foot">
+  <p><strong>Alcance y limitations.</strong> Informe de carácter orientativo elaborado en julio de 2026. Los precios de licencias, modelos y consumo de API referidos están sujetos a cambios frecuentes — el mercado atraviesa un reajuste generalizado de tarifas tras el fin de los precios de adopción subvencionados. Las estimaciones de ROI se basan en supuestos de volumen y coste-hora explictos en cada caso y deben validarse mediante piloto con línea base medida antes de comprometer inversión. Este documento no constituye asesoramiento financiero ni legal.</p>
+  <p>Automatización de Procesos: n8n y Agentes de IA · Gabriel Gisbert Aznar · Julio 2026</p>
+</footer>
+
+</div>
+</body>
+</html>
+
+}
